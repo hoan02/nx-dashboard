@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@nx-dashboard/auth/data-access';
@@ -7,7 +7,6 @@ import { AuthService } from '@nx-dashboard/auth/data-access';
   selector: 'lib-login',
   templateUrl: './login.component.html',
   imports: [RouterLink, ReactiveFormsModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);

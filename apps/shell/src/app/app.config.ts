@@ -5,7 +5,11 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { environment } from '../environments/environment.development';
 import { provideToastr } from 'ngx-toastr';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { API_URL, tokenInterceptor } from '@nx-dashboard/core/http-client';
+import {
+  API_URL,
+  errorInterceptor,
+  tokenInterceptor,
+} from '@nx-dashboard/core/http-client';
 
 const toastrConfig = {
   timeOut: 3000,
@@ -20,7 +24,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptors([tokenInterceptor])),
+    provideHttpClient(withInterceptors([tokenInterceptor, errorInterceptor])),
     provideToastr(toastrConfig),
     { provide: API_URL, useValue: environment.api_url },
   ],

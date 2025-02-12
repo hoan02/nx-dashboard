@@ -1,0 +1,28 @@
+<div class="flex min-h-screen items-center justify-center bg-gray-100">
+  <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-center text-2xl font-semibold">Sign in</h1>
+    <p class="text-center text-sm text-gray-600 mt-2">
+      <a [routerLink]="['/register']" class="text-blue-500 hover:underline">Need an account?</a>
+    </p>
+
+    <!-- <lib-list-errors></lib-list-errors> -->
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4 mt-4">
+      <div>
+        <input formControlName="email" type="email" id="email" placeholder="Email"
+          class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300" />
+        <!-- <lib-input-errors [control]="form.controls.email"></lib-input-errors> -->
+      </div>
+      <div>
+        <input formControlName="password" type="password" id="password" placeholder="Password"
+          class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300" />
+        <!-- <lib-input-errors [control]="form.controls.password"></lib-input-errors> -->
+      </div>
+      <button data-e2e-id="sign-in"
+        class="w-full bg-blue-500 text-white p-3 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50"
+        [disabled]="form.invalid || form.pending" type="submit">
+        Sign in
+      </button>
+    </form>
+  </div>
+</div>

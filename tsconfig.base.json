@@ -1,0 +1,34 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@nx-dashboard/auth/data-access": ["libs/auth/data-access/src/index.ts"],
+      "@nx-dashboard/auth/feature-auth": [
+        "libs/auth/feature-auth/src/index.ts"
+      ],
+      "@nx-dashboard/core/api-types": ["libs/core/api-types/src/index.ts"],
+      "@nx-dashboard/core/http-client": ["libs/core/http-client/src/index.ts"],
+
+      "auth/Routes": ["libs/auth/feature-auth/src/components/auth.routes.ts"],
+      "categories/Routes": [
+        "apps/categories/src/app/remote-entry/entry.routes.ts"
+      ],
+      "products/Routes": ["apps/products/src/app/remote-entry/entry.routes.ts"],
+      "users/Routes": ["apps/users/src/app/remote-entry/entry.routes.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

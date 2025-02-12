@@ -1,0 +1,30 @@
+<header class="h-16 flex items-center px-6 border-b bg-white shadow-md">
+  <!-- Logo -->
+  <a routerLink="/" class="text-2xl font-bold text-blue-600">Logo</a>
+
+  <!-- Navigation -->
+  <nav class="ml-10 flex-1">
+    <ul class="flex gap-6 text-gray-700 font-medium">
+      <li><a class="hover:text-blue-600 transition" routerLink="/categories">Categories</a></li>
+      <li><a class="hover:text-blue-600 transition" routerLink="/products">Products</a></li>
+      <li><a class="hover:text-blue-600 transition" routerLink="/users">Users</a></li>
+    </ul>
+  </nav>
+
+  <!-- User Section -->
+  <div class="flex items-center gap-4">
+    <!-- @if(isLoggedIn()){
+    <div class="flex items-center gap-2">
+      <img src="images/avt-default.png" alt="Avatar" class="w-10 h-10 rounded-full border">
+      <span class="text-gray-800 font-medium">{{ user().username }}</span>
+      <button (click)="onLogout()">Logout</button>
+    </div>
+    } @else {
+    <a class="text-blue-600 hover:underline" routerLink="/login">Login</a>
+    <a class="text-blue-600 hover:underline" routerLink="/register">Register</a>
+    } -->
+
+    <a class="text-blue-600 hover:underline" routerLink="/auth/login">Login</a>
+    <a class="text-blue-600 hover:underline" routerLink="/auth/register">Register</a>
+  </div>
+</header>

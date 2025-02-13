@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class SessionService {
-  private readonly STORAGE_KEY = 'auth_session';
+  public readonly STORAGE_KEY = 'auth_session';
   private profileSubject = new BehaviorSubject<any>(null);
 
   profile$ = this.profileSubject.asObservable();

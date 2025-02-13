@@ -1,12 +1,13 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService } from '@nx-dashboard/auth/data-access';
+import { AuthService, SessionService } from '@nx-dashboard/auth/data-access';
 import { catchError, switchMap, throwError } from 'rxjs';
 
 const PUBLIC_URLS = ['/auth/login', '/auth/register', '/auth/refresh'];
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const sessionService = inject(SessionService);
   let retried = false;
 
   return next(req).pipe(
@@ -19,14 +20,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       // Handle 401 errors for protected endpoints
       if (error.status === 401 && !retried) {
         retried = true;
-        authService.refreshToken();
 
         return authService.refreshToken().pipe(
           switchMap((success) => {
             if (success) {
-              // Get new token and retry original request
-              const accessToken = localStorage.getItem('accessToken');
-              if (!accessToken) {
+              // Get new token from session and retry original request
+              const session = sessionService.getSession();
+              if (!session?.accessToken) {
                 return throwError(
                   () => new Error('No access token after refresh')
                 );
@@ -35,7 +35,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               // Clone original request with new token
               const newReq = req.clone({
                 setHeaders: {
-                  Authorization: `Bearer ${accessToken}`,
+                  Authorization: `Bearer ${session.accessToken}`,
                 },
               });
               return next(newReq);

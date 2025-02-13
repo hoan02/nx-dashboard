@@ -1,6 +1,6 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '@nx-dashboard/auth/data-access';
+import { AuthService, SessionService } from '@nx-dashboard/auth/data-access';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,14 +11,12 @@ import { CommonModule } from '@angular/common';
 })
 export class HeaderComponent {
   private readonly authService = inject(AuthService);
+  private readonly sessionService = inject(SessionService);
 
-  user = computed(() => {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
-  });
+  user$ = this.sessionService.profile$;
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('user');
+    return !!this.sessionService.getSession();
   }
 
   onLogout(): void {

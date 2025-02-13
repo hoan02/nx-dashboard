@@ -18,7 +18,6 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly navigationService = inject(NavigationService);
   private readonly sessionService = inject(SessionService);
-  // private readonly apiUrl = 'http://localhost:8888';
 
   login(value: LoginUser): void {
     this.http
@@ -26,8 +25,10 @@ export class AuthService {
       .subscribe({
         next: (res: any) => {
           if (res.data) {
-            localStorage.setItem('user', JSON.stringify(res.data.user));
-            localStorage.setItem('accessToken', res.data.accessToken);
+            this.sessionService.setSession({
+              user: res.data.user,
+              accessToken: res.data.accessToken
+            });
             this.navigationService.navigateToSavedUrl();
           }
         },
@@ -41,8 +42,10 @@ export class AuthService {
     this.http.post(`/auth/register`, value).subscribe({
       next: (res: any) => {
         if (res.data) {
-          localStorage.setItem('user', JSON.stringify(res.data.user));
-          localStorage.setItem('accessToken', res.data.accessToken);
+          this.sessionService.setSession({
+            user: res.data.user,
+            accessToken: res.data.accessToken
+          });
           this.navigationService.navigateToHome();
         }
       },
@@ -53,36 +56,38 @@ export class AuthService {
   }
 
   logout(): void {
-    // Gọi API logout để clear cookie phía server
+    // Call API to clear server-side cookie
     this.http.post(`/auth/logout`, {}, { withCredentials: true })
       .subscribe({
         next: () => {
-          // Clear localStorage
-          localStorage.removeItem('user');
-          localStorage.removeItem('accessToken');
-
-          // Clear refreshToken cookie với đầy đủ các attributes
-          document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost; secure; samesite=strict;';
-
+          this.clearUserData();
           this.navigationService.navigateToLogin();
         },
         error: (error) => {
           console.error('Logout failed:', error);
-          // Vẫn clear localStorage và cookie nếu có lỗi
-          localStorage.removeItem('user');
-          localStorage.removeItem('accessToken');
-          document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost; secure; samesite=strict;';
-
+          this.clearUserData();
           this.navigationService.navigateToLogin();
         }
       });
+  }
+
+  private clearUserData(): void {
+    // Clear session
+    this.sessionService.clearSession();
+
+    // Clear refreshToken cookie
+    document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost; secure; samesite=strict;';
   }
 
   refreshToken(): Observable<any> {
     return this.http.get(`/auth/refresh`).pipe(
       tap((res: any) => {
         if (res.data) {
-          localStorage.setItem('accessToken', res.data.accessToken);
+          const session = this.sessionService.getSession();
+          this.sessionService.setSession({
+            ...session,
+            accessToken: res.data.accessToken
+          });
           return true;
         }
         return false;

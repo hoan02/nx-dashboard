@@ -18,11 +18,11 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly navigationService = inject(NavigationService);
   private readonly sessionService = inject(SessionService);
-  private readonly apiUrl = 'http://localhost:8888';
+  // private readonly apiUrl = 'http://localhost:8888';
 
   login(value: LoginUser): void {
     this.http
-      .post(`${this.apiUrl}/auth/login`, value, { withCredentials: true })
+      .post(`/auth/login`, value, { withCredentials: true })
       .subscribe({
         next: (res: any) => {
           if (res.data) {
@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   register(value: LoginUser): void {
-    this.http.post(`${this.apiUrl}/auth/register`, value).subscribe({
+    this.http.post(`/auth/register`, value).subscribe({
       next: (res: any) => {
         if (res.data) {
           localStorage.setItem('user', JSON.stringify(res.data.user));
@@ -54,7 +54,7 @@ export class AuthService {
 
   logout(): void {
     // Gọi API logout để clear cookie phía server
-    this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true })
+    this.http.post(`/auth/logout`, {}, { withCredentials: true })
       .subscribe({
         next: () => {
           // Clear localStorage
@@ -79,7 +79,7 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/auth/refresh`).pipe(
+    return this.http.get(`/auth/refresh`).pipe(
       tap((res: any) => {
         if (res.data) {
           localStorage.setItem('accessToken', res.data.accessToken);
@@ -96,7 +96,7 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/user`).pipe(
+    return this.http.get(`/user`).pipe(
       tap((res: any) => {
         const session = this.sessionService.getSession();
         this.sessionService.setSession({
@@ -108,6 +108,6 @@ export class AuthService {
   }
 
   getSessions(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/auth/sessions`);
+    return this.http.get(`/auth/sessions`);
   }
 }

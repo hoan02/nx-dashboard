@@ -21,13 +21,18 @@
       ],
       "@nx-dashboard/core/api-types": ["libs/core/api-types/src/index.ts"],
       "@nx-dashboard/core/http-client": ["libs/core/http-client/src/index.ts"],
+      "@nx-dashboard/ui": ["libs/ui/src/index.ts"],
 
       "auth/Routes": ["libs/auth/feature-auth/src/components/auth.routes.ts"],
+
       "categories/Routes": [
-        "apps/categories/src/app/remote-entry/entry.routes.ts"
+        "apps/categories/src/app/app.routes.ts"
       ],
-      "products/Routes": ["apps/products/src/app/remote-entry/entry.routes.ts"],
-      "users/Routes": ["apps/users/src/app/remote-entry/entry.routes.ts"]
+      "categories/CategoryService": [
+        "apps/categories/src/app/services/category.service.ts"
+      ],
+      "products/Routes": ["apps/products/src/app/app.routes.ts"],
+      "users/Routes": ["apps/users/src/app/app.routes.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

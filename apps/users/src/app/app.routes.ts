@@ -1,9 +1,18 @@
-import { Route } from '@angular/router';
+import { Routes } from '@angular/router';
+import { ListUserComponent } from './components/list-user/list-user.component';
+import { UserFormComponent } from './components/user-form/user-form.component';
 
-export const appRoutes: Route[] = [
+export const usersRoutes: Routes = [
   {
     path: '',
-    loadChildren: () =>
-      import('./remote-entry/entry.routes').then((m) => m.remoteRoutes),
+    component: ListUserComponent,
+  },
+  {
+    path: 'add',
+    component: UserFormComponent,
+  },
+  {
+    path: ':id',
+    component: UserFormComponent,
   },
 ];

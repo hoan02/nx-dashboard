@@ -1,9 +1,18 @@
-import { Route } from '@angular/router';
+import { Routes } from '@angular/router';
+import { ListCategoryComponent } from './components/list-category/list-category.component';
+import { CategoryFormComponent } from './components/category-form/category-form.component';
 
-export const appRoutes: Route[] = [
+export const categoriesRoutes: Routes = [
   {
     path: '',
-    loadChildren: () =>
-      import('./remote-entry/entry.routes').then((m) => m.remoteRoutes),
+    component: ListCategoryComponent,
+  },
+  {
+    path: 'add',
+    component: CategoryFormComponent,
+  },
+  {
+    path: ':id',
+    component: CategoryFormComponent,
   },
 ];

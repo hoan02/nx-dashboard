@@ -1,0 +1,99 @@
+<div class="container max-w-5xl mx-auto p-4">
+  <h2 class="text-2xl font-semibold mb-6">
+    {{ isEditMode ? 'Edit Product' : 'Add New Product' }}
+  </h2>
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+
+    <!-- Product Name -->
+    <div class="mb-4">
+      <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+      <input id="name" type="text" formControlName="name"
+        class="mt-1 block w-full p-2 border border-gray-300 rounded-md" />
+      <div *ngIf="productForm.get('name')?.touched && productForm.get('name')?.invalid"
+        class="text-red-500 text-xs mt-1">
+        <div *ngIf="productForm.get('name')?.hasError('required')">Product name is required.</div>
+        <div *ngIf="productForm.get('name')?.hasError('minlength')">Product name must be at least 3 characters long.
+        </div>
+        <div *ngIf="productForm.get('name')?.hasError('maxlength')">Product name cannot exceed 255 characters.</div>
+      </div>
+    </div>
+
+    <!-- Product Description -->
+    <div class="mb-4">
+      <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+      <textarea id="description" formControlName="description"
+        class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></textarea>
+      <div *ngIf="productForm.get('description')?.touched && productForm.get('description')?.invalid"
+        class="text-red-500 text-xs mt-1">
+        <div *ngIf="productForm.get('description')?.hasError('maxlength')">Description cannot exceed 1000 characters.
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Image -->
+    <div class="mb-4">
+      <label for="image" class="block text-sm font-medium text-gray-700">Image URL</label>
+      <input id="image" type="text" formControlName="image"
+        class="mt-1 block w-full p-2 border border-gray-300 rounded-md" />
+      <div *ngIf="productForm.get('image')?.touched && productForm.get('image')?.invalid"
+        class="text-red-500 text-xs mt-1">
+        <div *ngIf="productForm.get('image')?.hasError('required')">Image URL is required.</div>
+        <div *ngIf="productForm.get('image')?.hasError('pattern')">Please enter a valid URL (http:// or https://).</div>
+      </div>
+    </div>
+
+    <!-- Product Price -->
+    <div class="mb-4">
+      <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+      <input id="price" type="number" formControlName="price"
+        class="mt-1 block w-full p-2 border border-gray-300 rounded-md" />
+      <div *ngIf="productForm.get('price')?.touched && productForm.get('price')?.invalid"
+        class="text-red-500 text-xs mt-1">
+        <div *ngIf="productForm.get('price')?.hasError('required')">Price is required.</div>
+        <div *ngIf="productForm.get('price')?.hasError('min')">Price must be greater than or equal to 0.</div>
+      </div>
+    </div>
+
+    <!-- Category Selection -->
+    <div class="mb-4" formGroupName="categoryId">
+      <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+      <select id="category" formControlName="_id" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+        <option *ngFor="let category of categories" [value]="category._id">
+          {{ category.name }}
+        </option>
+      </select>
+      <div *ngIf="productForm.get('categoryId._id')?.touched && productForm.get('categoryId._id')?.invalid"
+        class="text-red-500 text-xs mt-1">
+        <div *ngIf="productForm.get('categoryId._id')?.hasError('required')">Category is required.</div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-end space-x-4">
+      <!-- Cancel Button -->
+      <button type="button"
+        class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+        (click)="goBack()" [disabled]="isSubmitting">
+        Cancel
+      </button>
+
+      <button type="submit" [disabled]="isSubmitting"
+        class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center space-x-2">
+        <span *ngIf="isSubmitting">
+          <svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin"
+            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB" />
+            <path
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor" />
+          </svg>
+          Loading...
+        </span>
+        <span *ngIf="!isSubmitting">{{ isEditMode ? 'Save Changes' : 'Add Product' }}</span>
+      </button>
+    </div>
+
+  </form>
+</div>

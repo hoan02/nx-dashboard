@@ -3,7 +3,8 @@ import { ModuleFederationConfig } from '@nx/module-federation';
 const config: ModuleFederationConfig = {
   name: 'categories',
   exposes: {
-    './Routes': 'apps/categories/src/app/remote-entry/entry.routes.ts',
+    './Routes': 'apps/categories/src/app/app.routes.ts',
+    './CategoryService': 'apps/categories/src/app/services/category.service.ts',
   },
 };
 

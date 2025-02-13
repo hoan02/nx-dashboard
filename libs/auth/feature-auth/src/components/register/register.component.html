@@ -5,7 +5,7 @@
       <a [routerLink]="['/login']" class="text-blue-500 hover:underline">Have an account?</a>
     </p>
 
-    <!-- <lib-list-errors></lib-list-errors> -->
+
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4 mt-4">
       <div>
@@ -15,8 +15,9 @@
           id="username"
           placeholder="Username"
           class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+          [class.border-red-500]="form.controls.username.touched && form.controls.username.invalid"
         />
-        <!-- <lib-input-errors [control]="form.controls.username"></lib-input-errors> -->
+        <lib-input-errors [control]="form.controls.username"></lib-input-errors>
       </div>
       <div>
         <input
@@ -25,8 +26,9 @@
           id="email"
           placeholder="Email"
           class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+          [class.border-red-500]="form.controls.email.touched && form.controls.email.invalid"
         />
-        <!-- <lib-input-errors [control]="form.controls.email"></lib-input-errors> -->
+        <lib-input-errors [control]="form.controls.email"></lib-input-errors>
       </div>
       <div>
         <input
@@ -35,9 +37,11 @@
           id="password"
           placeholder="Password"
           class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+          [class.border-red-500]="form.controls.password.touched && form.controls.password.invalid"
         />
-        <!-- <lib-input-errors [control]="form.controls.password"></lib-input-errors> -->
+        <lib-input-errors [control]="form.controls.password"></lib-input-errors>
       </div>
+      <lib-list-errors [errors]="errors"></lib-list-errors>
       <button
         data-e2e-id="sign-up"
         class="w-full bg-blue-500 text-white p-3 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50"

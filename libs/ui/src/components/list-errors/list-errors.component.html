@@ -1,0 +1,5 @@
+<div *ngIf="errors.length > 0" class="my-4 bg-red-50 p-4 rounded-lg">
+  <div *ngFor="let error of errors" class="text-red-600 text-sm">
+    {{ error }}
+  </div>
+</div>

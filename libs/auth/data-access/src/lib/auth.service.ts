@@ -19,11 +19,11 @@ export class AuthService {
   private readonly navigationService = inject(NavigationService);
   private readonly sessionService = inject(SessionService);
 
-  login(value: LoginUser): void {
-    this.http
+  login(value: LoginUser): Observable<any> {
+    return this.http
       .post(`/auth/login`, value, { withCredentials: true })
-      .subscribe({
-        next: (res: any) => {
+      .pipe(
+        tap((res: any) => {
           if (res.data) {
             this.sessionService.setSession({
               user: res.data.user,
@@ -31,16 +31,13 @@ export class AuthService {
             });
             this.navigationService.navigateToSavedUrl();
           }
-        },
-        error: (error) => {
-          console.error('Login failed:', error);
-        },
-      });
+        })
+      );
   }
 
-  register(value: LoginUser): void {
-    this.http.post(`/auth/register`, value).subscribe({
-      next: (res: any) => {
+  register(value: LoginUser): Observable<any> {
+    return this.http.post(`/auth/register`, value).pipe(
+      tap((res: any) => {
         if (res.data) {
           this.sessionService.setSession({
             user: res.data.user,
@@ -48,11 +45,8 @@ export class AuthService {
           });
           this.navigationService.navigateToHome();
         }
-      },
-      error: (error) => {
-        console.error('Registration failed:', error);
-      },
-    });
+      })
+    );
   }
 
   logout(): void {

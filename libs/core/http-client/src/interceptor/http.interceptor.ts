@@ -2,8 +2,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { API_URL } from '../lib';
 import { SessionService } from '@nx-dashboard/auth/data-access';
-
-const PUBLIC_URLS = ['/auth/login', '/auth/register', '/auth/refresh'];
+import { PUBLIC_URLS } from '../constants/url';
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   const apiUrl = inject(API_URL);

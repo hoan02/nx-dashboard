@@ -3,11 +3,7 @@ import { inject } from '@angular/core';
 import { AuthService } from '@nx-dashboard/auth/data-access';
 import { catchError, switchMap, throwError } from 'rxjs';
 
-const PUBLIC_URLS = [
-  '/auth/login',
-  '/auth/register',
-  '/auth/refresh'
-];
+const PUBLIC_URLS = ['/auth/login', '/auth/register', '/auth/refresh'];
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -16,13 +12,14 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       // Skip token refresh for public endpoints
-      if (PUBLIC_URLS.some(url => req.url.includes(url))) {
+      if (PUBLIC_URLS.some((url) => req.url.includes(url))) {
         return throwError(() => error);
       }
 
       // Handle 401 errors for protected endpoints
       if (error.status === 401 && !retried) {
         retried = true;
+        authService.refreshToken();
 
         return authService.refreshToken().pipe(
           switchMap((success) => {
@@ -30,7 +27,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               // Get new token and retry original request
               const accessToken = localStorage.getItem('accessToken');
               if (!accessToken) {
-                return throwError(() => new Error('No access token after refresh'));
+                return throwError(
+                  () => new Error('No access token after refresh')
+                );
               }
 
               // Clone original request with new token

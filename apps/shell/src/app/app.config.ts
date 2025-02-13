@@ -8,7 +8,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   API_URL,
   errorInterceptor,
-  tokenInterceptor,
+  httpInterceptor,
 } from '@nx-dashboard/core/http-client';
 
 const toastrConfig = {
@@ -24,7 +24,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptors([tokenInterceptor, errorInterceptor])),
+    provideHttpClient(withInterceptors([httpInterceptor, errorInterceptor])),
     provideToastr(toastrConfig),
     { provide: API_URL, useValue: environment.api_url },
   ],

@@ -1,10 +1,12 @@
 import { Route } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
+import { authGuard } from '@nx-dashboard/auth/data-access';
 
 export const appRoutes: Route[] = [
   {
     path: 'users',
     loadChildren: () => import('users/Routes').then((m) => m!.usersRoutes),
+    canActivate: [authGuard],
   },
   {
     path: 'categories',
@@ -15,6 +17,7 @@ export const appRoutes: Route[] = [
     path: 'products',
     loadChildren: () =>
       import('products/Routes').then((m) => m!.productsRoutes),
+    canActivate: [authGuard],
   },
   {
     path: 'auth',

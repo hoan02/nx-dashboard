@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService, SessionService } from '@nx-dashboard/auth/data-access';
 import { CommonModule } from '@angular/common';
+import { IUserRole } from '@nx-dashboard/core/api-types';
 
 @Component({
   selector: 'app-header',
@@ -17,6 +18,11 @@ export class HeaderComponent {
 
   isLoggedIn(): boolean {
     return !!this.sessionService.getSession();
+  }
+
+  isAdmin(): boolean {
+    const session = this.sessionService.getSession();
+    return session?.user?.role === IUserRole.ADMIN;
   }
 
   onLogout(): void {

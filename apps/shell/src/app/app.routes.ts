@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { authGuard } from '@nx-dashboard/auth/data-access';
+import { ErrorComponent } from '@nx-dashboard/ui';
 
 export const appRoutes: Route[] = [
   {
@@ -22,6 +23,10 @@ export const appRoutes: Route[] = [
   {
     path: 'auth',
     loadChildren: () => import('auth/Routes').then((m) => m!.authRoutes),
+  },
+  {
+    path: 'error',
+    component: ErrorComponent,
   },
   {
     path: '',

@@ -17,28 +17,33 @@ export class ErrorService {
   constructor(private router: Router) {}
 
   handleError(error: any) {
-    console.log(error);
     let errorState: ErrorState;
 
-    if (error.status === 404) {
+    if (error?.status === 404) {
       errorState = {
         code: 404,
         message: 'Không tìm thấy trang yêu cầu',
       };
-    } else if (error.status === 403) {
+    } else if (error?.status === 403) {
       errorState = {
         code: 403,
         message: 'Bạn không có quyền truy cập trang này',
       };
-    } else if (error.status === 500) {
+    } else if (error?.status === 500) {
       errorState = {
         code: 500,
         message: 'Đã có lỗi xảy ra từ phía server',
       };
+    } else if (!error?.status) {
+      errorState = {
+        code: 0,
+        message:
+          'Không thể kết nối tới máy chủ. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.',
+      };
     } else {
       errorState = {
-        code: error.status || 500,
-        message: error.message || 'Đã có lỗi xảy ra',
+        code: 500,
+        message: 'Đã có lỗi xảy ra',
       };
     }
 

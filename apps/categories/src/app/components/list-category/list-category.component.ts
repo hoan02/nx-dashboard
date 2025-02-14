@@ -103,8 +103,8 @@ export class ListCategoryComponent implements OnInit {
 
     const dialogRef = this.dialog.open(DialogConfirmComponent, {
       data: {
-        message: 'Are you sure you want to delete this category?',
-        labelButton: 'Delete',
+        message: 'Bạn có chắc chắn muốn xóa danh mục này?',
+        labelButton: 'Xóa',
       },
     });
 
@@ -118,11 +118,11 @@ export class ListCategoryComponent implements OnInit {
   private deleteCategory(id: string): void {
     this.categoryService.deleteCategory(id).subscribe({
       next: () => {
-        this.toastr.success('Category deleted successfully!');
+        this.toastr.success('Xóa danh mục thành công!');
         this.loadCategories();
       },
       error: (err) => {
-        this.toastr.error('Error deleting category!', err.message);
+        this.toastr.error('Lỗi khi xóa danh mục!', err.message);
       },
     });
   }

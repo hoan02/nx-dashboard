@@ -1,0 +1,33 @@
+:host {
+  display: block;
+}
+
+mat-toolbar {
+  height: 64px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.mat-mdc-button {
+  height: 40px;
+  padding: 0 8px;
+
+  img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .mat-icon {
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.mat-mdc-menu-item {
+  .mat-icon {
+    margin-right: 8px;
+    color: rgba(0, 0, 0, 0.54);
+  }
+}

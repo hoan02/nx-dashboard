@@ -1,35 +1,39 @@
-<header class="h-16 flex items-center px-6 border-b bg-white shadow-md">
-  <!-- Logo -->
-  <a routerLink="/" class="text-2xl font-bold text-blue-600">Logo</a>
+<mat-toolbar class="bg-white shadow-sm">
+  <!-- Toggle Sidebar Button (chỉ hiển thị khi đã đăng nhập) -->
+  <button *ngIf="isLoggedIn" mat-icon-button class="toggle-button" (click)="onToggleSidebar()">
+    <mat-icon>menu</mat-icon>
+  </button>
 
-  <!-- Navigation -->
-  <nav class="ml-10 flex-1">
-    <ul class="flex gap-6 text-gray-700 font-medium">
-      @if(isLoggedIn()){
-      <li><a class="hover:text-blue-600 transition" routerLink="/categories">Categories</a></li>
-      <li><a class="hover:text-blue-600 transition" routerLink="/products">Products</a></li>
-      @if(isAdmin()){
-      <li><a class="hover:text-blue-600 transition" routerLink="/users">Users</a></li>
-      }
-      }
-      <li><a class="hover:text-blue-600 transition" routerLink="/lifecycle-hooks">Lifecycle hooks</a></li>
-    </ul>
-  </nav>
+  <div class="flex-1"></div>
 
-  <!-- User Section -->
-  <div class="flex items-center gap-4">
-    @if(isLoggedIn()){
-    <div class="flex items-center gap-2">
-      <a routerLink="/auth/profile" class="flex items-center gap-2 hover:opacity-80 transition">
-        <img src="images/avt-default.png" alt="Avatar" class="w-10 h-10 rounded-full border">
-        <span class="text-gray-800 font-medium">{{ (user$ | async)?.username }}</span>
+  <!-- Login Button or User Menu -->
+  <ng-container *ngIf="isLoggedIn && currentUser; else loginButton">
+    <button mat-button [matMenuTriggerFor]="userMenu">
+      <div class="flex items-center">
+        <img width="32" height="32" [src]="currentUser?.profilePicture || 'images/avt-default.png'" class="rounded-full"
+          [alt]="currentUser?.fullName || currentUser?.username">
+        <p class="text-gray-700 mx-2">{{ currentUser?.fullName || currentUser?.username }}</p>
+      </div>
+    </button>
+
+    <!-- User Menu Dropdown -->
+    <mat-menu #userMenu="matMenu">
+      <a mat-menu-item routerLink="/auth/profile">
+        <mat-icon>person</mat-icon>
+        <span>Hồ sơ</span>
       </a>
-      <button (click)="onLogout()"
-        class="px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:underline transition">Logout</button>
-    </div>
-    } @else {
-    <a class="text-blue-600 hover:underline" routerLink="/auth/login">Login</a>
-    <a class="text-blue-600 hover:underline" routerLink="/auth/register">Register</a>
-    }
-  </div>
-</header>
+      <button mat-menu-item (click)="authService.logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Đăng xuất</span>
+      </button>
+    </mat-menu>
+  </ng-container>
+
+  <!-- Login Button Template -->
+  <ng-template #loginButton>
+    <a mat-raised-button color="primary" routerLink="/auth/login" class="login-button">
+      <mat-icon class="mr-2">login</mat-icon>
+      Đăng nhập
+    </a>
+  </ng-template>
+</mat-toolbar>

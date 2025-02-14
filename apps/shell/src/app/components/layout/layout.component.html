@@ -1,2 +1,19 @@
-<app-header></app-header>
-<router-outlet></router-outlet>
+<mat-sidenav-container class="h-screen">
+  <!-- Sidebar (chỉ hiển thị khi đã đăng nhập) -->
+  <!-- @if(isLoggedIn){ -->
+  <mat-sidenav #drawer mode="over" class="bg-white">
+    <app-sidebar (menuItemClick)="drawer.close()"></app-sidebar>
+  </mat-sidenav>
+  <!-- } -->
+
+  <!-- Main Content -->
+  <mat-sidenav-content>
+    <!-- Header -->
+    <app-header (toggleSidebar)="drawer.toggle()" class="header-fixed"></app-header>
+
+    <!-- Page Content -->
+    <div class="content-wrapper">
+      <router-outlet (activate)="onRouteChange()"></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

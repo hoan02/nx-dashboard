@@ -112,8 +112,8 @@ export class ListProductComponent implements OnInit {
 
     const dialogRef = this.dialog.open(DialogConfirmComponent, {
       data: {
-        message: 'Are you sure you want to delete this product?',
-        labelButton: 'Delete',
+        message: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+        labelButton: 'Xóa',
       },
     });
 
@@ -127,11 +127,11 @@ export class ListProductComponent implements OnInit {
   private deleteProduct(id: string): void {
     this.productService.deleteProduct(id).subscribe({
       next: () => {
-        this.toastr.success('Product deleted successfully!');
+        this.toastr.success('Xóa sản phẩm thành công!');
         this.loadProducts();
       },
       error: (err) => {
-        this.toastr.error('Error deleting product!', err.message);
+        this.toastr.error('Lỗi khi xóa sản phẩm!', err.message);
       },
     });
   }

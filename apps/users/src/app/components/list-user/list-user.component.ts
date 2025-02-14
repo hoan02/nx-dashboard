@@ -115,8 +115,8 @@ export class ListUserComponent implements OnInit {
 
     const dialogRef = this.dialog.open(DialogConfirmComponent, {
       data: {
-        message: 'Are you sure you want to delete this user?',
-        labelButton: 'Delete',
+        message: 'Bạn có chắc chắn muốn xóa người dùng này?',
+        labelButton: 'Xóa',
       },
     });
 
@@ -131,12 +131,12 @@ export class ListUserComponent implements OnInit {
     this.userService
       .deleteUser(id)
       .pipe(
-        tap(() => this.toastr.success('User deleted successfully!')),
+        tap(() => this.toastr.success('Xóa người dùng thành công!')),
         switchMap(() => {
           return this.userService.getUsers(this.currentPage + 1, this.pageSize);
         }),
         catchError((err) => {
-          this.toastr.error('Error deleting user!', err.message);
+          this.toastr.error('Lỗi khi xóa người dùng!', err.message);
           return of(null);
         })
       )

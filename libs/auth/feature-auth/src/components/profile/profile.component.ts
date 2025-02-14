@@ -1,8 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { SessionService } from '@nx-dashboard/auth/data-access';
+import { AuthService, StorageService } from '@nx-dashboard/auth/data-access';
 import { IUser } from '@nx-dashboard/core/api-types';
+import { ISession } from '@nx-dashboard/auth/data-access';
 
 @Component({
   selector: 'lib-profile',
@@ -11,17 +12,19 @@ import { IUser } from '@nx-dashboard/core/api-types';
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {
-  private readonly sessionService = inject(SessionService);
+  private readonly storageService = inject(StorageService);
+  private readonly authService = inject(AuthService);
 
   user?: IUser;
+  sessions: ISession[] = [];
   isLoading = true;
   error?: string;
 
   ngOnInit() {
-    this.sessionService.profile$.subscribe({
+    this.storageService.profile$.subscribe({
       next: (user) => {
         this.user = user;
-        this.isLoading = false;
+        this.loadSessions();
       },
       error: (error) => {
         console.error('Error loading user profile:', error);
@@ -32,14 +35,27 @@ export class ProfileComponent implements OnInit {
   }
 
   loadUserProfile() {
-    const session = this.sessionService.getSession();
+    const session = this.storageService.getSession();
     if (session?.user) {
       this.user = session.user;
-      this.isLoading = false;
-      this.error = undefined;
+      this.loadSessions();
     } else {
       this.error = 'Không tìm thấy thông tin người dùng';
       this.isLoading = false;
     }
+  }
+
+  loadSessions() {
+    this.authService.getSessions().subscribe({
+      next: (sessions) => {
+        this.sessions = sessions;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading sessions:', error);
+        this.error = 'Không thể tải thông tin phiên đăng nhập';
+        this.isLoading = false;
+      }
+    });
   }
 }

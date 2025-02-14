@@ -1,3 +1,4 @@
+import { StorageService } from './storage.service';
 import { SessionService } from './session.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
@@ -17,13 +18,14 @@ import { NavigationService } from './navigation.service';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly navigationService = inject(NavigationService);
+  private readonly storageService = inject(StorageService);
   private readonly sessionService = inject(SessionService);
 
   login(value: LoginUser): Observable<any> {
     return this.http.post(`/auth/login`, value, { withCredentials: true }).pipe(
       tap((res: any) => {
         if (res.data) {
-          this.sessionService.setSession({
+          this.storageService.setSession({
             user: res.data.user,
             accessToken: res.data.accessToken,
           });
@@ -37,7 +39,7 @@ export class AuthService {
     return this.http.post(`/auth/register`, value).pipe(
       tap((res: any) => {
         if (res.data) {
-          this.sessionService.setSession({
+          this.storageService.setSession({
             user: res.data.user,
             accessToken: res.data.accessToken,
           });
@@ -48,6 +50,7 @@ export class AuthService {
   }
 
   logout(): void {
+    console.log('logout');
     // Call API to clear server-side cookie
     this.http.post(`/auth/logout`, {}, { withCredentials: true }).subscribe({
       next: () => {
@@ -64,7 +67,7 @@ export class AuthService {
 
   private clearUserData(): void {
     // Clear session
-    this.sessionService.clearSession();
+    this.storageService.clearSession();
 
     // Clear refreshToken cookie
     document.cookie =
@@ -72,70 +75,48 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
-    return this.http.get(`/auth/refresh`).pipe(
-      tap((res: any) => {
-        if (res.data) {
-          const session = this.sessionService.getSession();
-          this.sessionService.setSession({
-            ...session,
-            accessToken: res.data.accessToken,
-          });
-          return true;
-        }
-        return false;
-      }),
+    return this.sessionService.refreshToken().pipe(
       catchError((error) => {
         console.log('Refresh token failed: ' + error);
         this.navigationService.navigateToLogin();
-        return throwError(error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  checkUsername(username: string): Observable<boolean> {
+    return this.sessionService.checkUsername(username).pipe(
+      catchError((error) => {
+        console.error('Check username error:', error);
+        return of(false);
+      })
+    );
+  }
+
+  checkEmail(email: string): Observable<boolean> {
+    return this.sessionService.checkEmail(email).pipe(
+      catchError((error) => {
+        console.error('Check email error:', error);
+        return of(false);
+      })
+    );
+  }
+
+  getCurrentUser(): Observable<any> {
+    return this.sessionService.getCurrentUser().pipe(
+      catchError((error) => {
+        console.error('Get current user error:', error);
+        return throwError(() => error);
       })
     );
   }
 
   getSessions(): Observable<any> {
-    return this.http.get(`/auth/sessions`);
-  }
-
-  checkUsername(username: string): Observable<boolean> {
-    const params = new HttpParams().set('username', username);
-    return this.http
-      .get<any>(`/auth/check-username`, {
-        params,
+    return this.sessionService.getActiveSessions().pipe(
+      catchError((error) => {
+        console.error('Get sessions error:', error);
+        return throwError(() => error);
       })
-      .pipe(
-        map((res) => {
-          return res?.data?.exists || false;
-        }),
-        catchError((error) => {
-          console.error('Check username error:', error);
-          return of(false);
-        })
-      );
-  }
-
-  checkEmail(email: string): Observable<boolean> {
-    const params = new HttpParams().set('email', email);
-    return this.http
-      .get<any>(`/auth/check-email`, {
-        params,
-      })
-      .pipe(
-        map((res) => {
-          console.log('Check email response:', res);
-          return res?.data?.exists || false;
-        }),
-        catchError((error) => {
-          console.error('Check email error:', error);
-          return of(false);
-        })
-      );
-  }
-
-  getCurrentUser(): Observable<any> {
-    const session = this.sessionService.getSession();
-    if (!session?.user) {
-      return throwError(() => new Error('Không tìm thấy thông tin người dùng'));
-    }
-    return of({ data: { user: session.user } });
+    );
   }
 }

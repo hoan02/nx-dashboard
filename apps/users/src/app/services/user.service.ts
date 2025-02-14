@@ -7,8 +7,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
   providedIn: 'root',
 })
 export class UserService {
-  private prefixUrl = '/users';
   private readonly http = inject(HttpClient);
+  private readonly prefixUrl = '/users';
 
   getUsers(pageNumber: number, pageSize: number): Observable<IUserTable> {
     const params = new HttpParams()

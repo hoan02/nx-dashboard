@@ -132,14 +132,10 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<any> {
-    return this.http.get(`/user`).pipe(
-      tap((res: any) => {
-        const session = this.sessionService.getSession();
-        this.sessionService.setSession({
-          ...session,
-          user: res.data.user,
-        });
-      })
-    );
+    const session = this.sessionService.getSession();
+    if (!session?.user) {
+      return throwError(() => new Error('Không tìm thấy thông tin người dùng'));
+    }
+    return of({ data: { user: session.user } });
   }
 }

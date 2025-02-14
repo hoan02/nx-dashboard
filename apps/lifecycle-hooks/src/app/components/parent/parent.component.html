@@ -1,0 +1,9 @@
+<div class="p-10 bg-slate-300 max-w-[400px] mx-auto mt-10">
+  <p class="font-bold text-gray-700">Parent Component</p>
+  <p class="my-2">Message from Child: {{ message }}</p>
+  <div class="flex gap-10 mt-4">
+    <button class="bg-green-500 p-2 rounded" (click)="toggleChild()">Toggle Child</button>
+    <button class="bg-green-500 p-2 rounded" (click)="changeValue()">Change Value</button>
+  </div>
+  <app-child *ngIf="isChildVisible" [value]="parentValue" (messageEvent)="receiveMessage($event)"></app-child>
+</div>

@@ -13,9 +13,9 @@ export interface IUser {
   profilePicture?: string;
   status?: string;
   lastLogin?: Date;
-  resetPasswordToken?: string;
-  resetPasswordExpires?: Date;
-  phoneNumber?: string;
+  phone?: string;
+  address?: string;
+  position?: number;
 }
 
 export interface UserResponse {

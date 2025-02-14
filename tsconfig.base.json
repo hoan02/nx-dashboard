@@ -25,14 +25,13 @@
 
       "auth/Routes": ["libs/auth/feature-auth/src/components/auth.routes.ts"],
 
-      "categories/Routes": [
-        "apps/categories/src/app/app.routes.ts"
-      ],
+      "categories/Routes": ["apps/categories/src/app/app.routes.ts"],
       "categories/CategoryService": [
         "apps/categories/src/app/services/category.service.ts"
       ],
       "products/Routes": ["apps/products/src/app/app.routes.ts"],
-      "users/Routes": ["apps/users/src/app/app.routes.ts"]
+      "users/Routes": ["apps/users/src/app/app.routes.ts"],
+      "lifecycleHooks/Routes": ["apps/lifecycle-hooks/src/app/app.routes.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -13,11 +13,18 @@ export const appRoutes: Route[] = [
     path: 'categories',
     loadChildren: () =>
       import('categories/Routes').then((m) => m!.categoriesRoutes),
+    canActivate: [authGuard],
   },
   {
     path: 'products',
     loadChildren: () =>
       import('products/Routes').then((m) => m!.productsRoutes),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'lifecycle-hooks',
+    loadChildren: () =>
+      import('lifecycleHooks/Routes').then((m) => m!.lifecycleHooksRoutes),
   },
   {
     path: 'auth',

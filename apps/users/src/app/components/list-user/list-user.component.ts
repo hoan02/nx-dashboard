@@ -3,7 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IUser, IUserRole, IUserTable } from '@nx-dashboard/core/api-types';
-import { TableComponent, TableConfig, TableAction, DialogConfirmComponent } from '@nx-dashboard/ui';
+import {
+  TableComponent,
+  TableConfig,
+  TableAction,
+  DialogConfirmComponent,
+} from '@nx-dashboard/ui';
 import { PageEvent } from '@angular/material/paginator';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../../services/user.service';
@@ -27,6 +32,11 @@ export class ListUserComponent implements OnInit {
 
   tableConfig: TableConfig<IUser> = {
     columns: [
+      {
+        key: 'no',
+        header: '#',
+        cell: (item: IUser) => item.position?.toString() || '-',
+      },
       {
         key: 'username',
         header: 'Username',

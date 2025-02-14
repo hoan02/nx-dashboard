@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AuthService, SessionService } from '@nx-dashboard/auth/data-access';
+import { AuthService, StorageService } from '@nx-dashboard/auth/data-access';
 import { CommonModule } from '@angular/common';
 import { IUserRole } from '@nx-dashboard/core/api-types';
 
@@ -12,16 +12,16 @@ import { IUserRole } from '@nx-dashboard/core/api-types';
 })
 export class HeaderComponent {
   private readonly authService = inject(AuthService);
-  private readonly sessionService = inject(SessionService);
+  private readonly storageService = inject(StorageService);
 
-  user$ = this.sessionService.profile$;
+  user$ = this.storageService.profile$;
 
   isLoggedIn(): boolean {
-    return !!this.sessionService.getSession();
+    return !!this.storageService.getSession();
   }
 
   isAdmin(): boolean {
-    const session = this.sessionService.getSession();
+    const session = this.storageService.getSession();
     return session?.user?.role === IUserRole.ADMIN;
   }
 

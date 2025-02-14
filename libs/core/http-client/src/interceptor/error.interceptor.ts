@@ -1,13 +1,13 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService, SessionService } from '@nx-dashboard/auth/data-access';
+import { AuthService, StorageService } from '@nx-dashboard/auth/data-access';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { ErrorService } from '../lib/error.service';
 import { PUBLIC_URLS } from '../constants/url';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const sessionService = inject(SessionService);
+  const storageService = inject(StorageService);
   const errorService = inject(ErrorService);
   let retried = false;
 
@@ -25,7 +25,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           switchMap((success) => {
             if (success) {
               // Get new token from session and retry original request
-              const session = sessionService.getSession();
+              const session = storageService.getSession();
               if (!session?.accessToken) {
                 const noTokenError = new Error('No access token after refresh');
                 errorService.handleError(noTokenError);

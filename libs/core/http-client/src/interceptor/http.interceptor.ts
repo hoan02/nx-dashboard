@@ -1,12 +1,12 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { API_URL } from '../lib';
-import { SessionService } from '@nx-dashboard/auth/data-access';
+import { StorageService } from '@nx-dashboard/auth/data-access';
 import { PUBLIC_URLS } from '../constants/url';
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   const apiUrl = inject(API_URL);
-  const sessionService = inject(SessionService);
+  const storageService = inject(StorageService);
 
   let fullUrl = req.url;
   if (!req.url.startsWith('http')) {
@@ -22,7 +22,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
     return next(newRequest);
   }
 
-  const session = sessionService.getSession();
+  const session = storageService.getSession();
   if (session?.accessToken) {
     newRequest = newRequest.clone({
       setHeaders: {

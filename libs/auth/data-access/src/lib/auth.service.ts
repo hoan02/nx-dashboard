@@ -102,14 +102,14 @@ export class AuthService {
     );
   }
 
-  getCurrentUser(): Observable<any> {
-    return this.sessionService.getCurrentUser().pipe(
-      catchError((error) => {
-        console.error('Get current user error:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+  // getCurrentUser(): Observable<any> {
+  //   return this.sessionService.getCurrentUser().pipe(
+  //     catchError((error) => {
+  //       console.error('Get current user error:', error);
+  //       return throwError(() => error);
+  //     })
+  //   );
+  // }
 
   getSessions(): Observable<any> {
     return this.sessionService.getActiveSessions().pipe(

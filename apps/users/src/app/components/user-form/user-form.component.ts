@@ -97,7 +97,7 @@ export class UserFormComponent implements OnInit {
       role: [IUserRole.USER, [Validators.required]],
       profilePicture: [''],
       status: ['active'],
-      phoneNumber: ['', [Validators.pattern(/^\+?[0-9\s]*$/)]],
+      phone: ['', [Validators.pattern(/^\+?[0-9\s]*$/)]],
     });
   }
 

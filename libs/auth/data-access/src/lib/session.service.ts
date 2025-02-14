@@ -4,16 +4,37 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 
-export interface ISession {
-  id: string;
-  userId: string;
-  userAgent: string;
+export interface DeviceInfo {
+  deviceType: string;
+  deviceModel: string;
+  deviceVendor: string;
+  osName: string;
+  osVersion: string;
+  browserName: string;
+  browserVersion: string;
   ip: string;
+}
+
+export interface ISession {
+  userId: string;
+  token: string;
+  expiresAt: string;
+  deviceInfo: DeviceInfo;
+  ipAddress: string;
   isValid: boolean;
-  isCurrentSession: boolean;
-  lastActivity: Date;
-  lastUsedAt: Date;
-  expiresAt: Date;
+  lastUsedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+  isCurrentSession?: boolean;
+}
+
+export interface SessionResponse {
+  message: string;
+  result: boolean;
+  data: {
+    sessions: ISession[];
+  };
 }
 
 @Injectable({
@@ -77,32 +98,30 @@ export class SessionService {
       );
   }
 
-  getCurrentUser(): Observable<any> {
-    const session = this.storageService.getSession();
-    if (!session?.user) {
-      return throwError(() => new Error('Không tìm thấy thông tin người dùng'));
-    }
-    return this.http.get('/auth/me').pipe(
-      tap((res: any) => {
-        if (res.data?.user) {
-          this.storageService.setSession({
-            ...session,
-            user: res.data.user
-          });
-        }
-      })
-    );
-  }
+  // getCurrentUser(): Observable<any> {
+  //   const session = this.storageService.getSession();
+  //   if (!session?.user) {
+  //     return throwError(() => new Error('Không tìm thấy thông tin người dùng'));
+  //   }
+  //   return this.http.get('/auth/me').pipe(
+  //     tap((res: any) => {
+  //       if (res.data?.user) {
+  //         this.storageService.setSession({
+  //           ...session,
+  //           user: res.data.user
+  //         });
+  //       }
+  //     })
+  //   );
+  // }
 
   getActiveSessions(): Observable<ISession[]> {
-    return this.http.get<any>('/sessions').pipe(
+    return this.http.get<SessionResponse>('/sessions').pipe(
       map((res) => {
         if (res.result && res.data?.sessions) {
-          // Xử lý và chuyển đổi dữ liệu từ backend
-          return res.data.sessions.map((session: any) => ({
+          return res.data.sessions.map((session) => ({
             ...session,
-            lastActivity: session.lastUsedAt, // Map lastUsedAt từ BE thành lastActivity cho FE
-            isCurrentSession: this.isCurrentSession(session) // Xác định phiên hiện tại
+            isCurrentSession: this.isCurrentSession(session)
           }));
         }
         return [];
@@ -114,10 +133,8 @@ export class SessionService {
     );
   }
 
-  private isCurrentSession(session: any): boolean {
+  private isCurrentSession(session: ISession): boolean {
     const currentSession = this.storageService.getSession();
-    // So sánh thông tin để xác định phiên hiện tại
-    // Có thể dựa vào refreshToken hoặc các thông tin khác
-    return session.userId === currentSession?.user?._id;
+    return session.token === currentSession?.accessToken;
   }
 }

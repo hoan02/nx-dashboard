@@ -1,5 +1,5 @@
 import { SessionService } from './session.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { LoginUser } from '@nx-dashboard/core/api-types';
 import {
@@ -20,19 +20,17 @@ export class AuthService {
   private readonly sessionService = inject(SessionService);
 
   login(value: LoginUser): Observable<any> {
-    return this.http
-      .post(`/auth/login`, value, { withCredentials: true })
-      .pipe(
-        tap((res: any) => {
-          if (res.data) {
-            this.sessionService.setSession({
-              user: res.data.user,
-              accessToken: res.data.accessToken
-            });
-            this.navigationService.navigateToSavedUrl();
-          }
-        })
-      );
+    return this.http.post(`/auth/login`, value, { withCredentials: true }).pipe(
+      tap((res: any) => {
+        if (res.data) {
+          this.sessionService.setSession({
+            user: res.data.user,
+            accessToken: res.data.accessToken,
+          });
+          this.navigationService.navigateToSavedUrl();
+        }
+      })
+    );
   }
 
   register(value: LoginUser): Observable<any> {
@@ -41,7 +39,7 @@ export class AuthService {
         if (res.data) {
           this.sessionService.setSession({
             user: res.data.user,
-            accessToken: res.data.accessToken
+            accessToken: res.data.accessToken,
           });
           this.navigationService.navigateToHome();
         }
@@ -51,18 +49,17 @@ export class AuthService {
 
   logout(): void {
     // Call API to clear server-side cookie
-    this.http.post(`/auth/logout`, {}, { withCredentials: true })
-      .subscribe({
-        next: () => {
-          this.clearUserData();
-          this.navigationService.navigateToLogin();
-        },
-        error: (error) => {
-          console.error('Logout failed:', error);
-          this.clearUserData();
-          this.navigationService.navigateToLogin();
-        }
-      });
+    this.http.post(`/auth/logout`, {}, { withCredentials: true }).subscribe({
+      next: () => {
+        this.clearUserData();
+        this.navigationService.navigateToLogin();
+      },
+      error: (error) => {
+        console.error('Logout failed:', error);
+        this.clearUserData();
+        this.navigationService.navigateToLogin();
+      },
+    });
   }
 
   private clearUserData(): void {
@@ -70,7 +67,8 @@ export class AuthService {
     this.sessionService.clearSession();
 
     // Clear refreshToken cookie
-    document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost; secure; samesite=strict;';
+    document.cookie =
+      'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost; secure; samesite=strict;';
   }
 
   refreshToken(): Observable<any> {
@@ -80,7 +78,7 @@ export class AuthService {
           const session = this.sessionService.getSession();
           this.sessionService.setSession({
             ...session,
-            accessToken: res.data.accessToken
+            accessToken: res.data.accessToken,
           });
           return true;
         }
@@ -94,6 +92,45 @@ export class AuthService {
     );
   }
 
+  getSessions(): Observable<any> {
+    return this.http.get(`/auth/sessions`);
+  }
+
+  checkUsername(username: string): Observable<boolean> {
+    const params = new HttpParams().set('username', username);
+    return this.http
+      .get<any>(`/auth/check-username`, {
+        params,
+      })
+      .pipe(
+        map((res) => {
+          return res?.data?.exists || false;
+        }),
+        catchError((error) => {
+          console.error('Check username error:', error);
+          return of(false);
+        })
+      );
+  }
+
+  checkEmail(email: string): Observable<boolean> {
+    const params = new HttpParams().set('email', email);
+    return this.http
+      .get<any>(`/auth/check-email`, {
+        params,
+      })
+      .pipe(
+        map((res) => {
+          console.log('Check email response:', res);
+          return res?.data?.exists || false;
+        }),
+        catchError((error) => {
+          console.error('Check email error:', error);
+          return of(false);
+        })
+      );
+  }
+
   getCurrentUser(): Observable<any> {
     return this.http.get(`/user`).pipe(
       tap((res: any) => {
@@ -104,9 +141,5 @@ export class AuthService {
         });
       })
     );
-  }
-
-  getSessions(): Observable<any> {
-    return this.http.get(`/auth/sessions`);
   }
 }

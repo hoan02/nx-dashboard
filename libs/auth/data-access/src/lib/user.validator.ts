@@ -1,10 +1,10 @@
 import { AbstractControl } from '@angular/forms';
 import { debounceTime, map, switchMap, take } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 
 export class UserValidators {
-  static usernameExists(userService: UserService) {
+  static usernameExists(authService: AuthService) {
     return (control: AbstractControl) => {
       if (!control.value) {
         return of(null);
@@ -12,14 +12,14 @@ export class UserValidators {
 
       return of(control.value).pipe(
         debounceTime(500),
-        switchMap((username) => userService.checkUsername(username)),
+        switchMap((username) => authService.checkUsername(username)),
         take(1),
         map((exists) => (exists ? { usernameExists: true } : null))
       );
     };
   }
 
-  static emailExists(userService: UserService) {
+  static emailExists(authService: AuthService) {  
     return (control: AbstractControl) => {
       if (!control.value) {
         return of(null);
@@ -27,7 +27,7 @@ export class UserValidators {
 
       return of(control.value).pipe(
         debounceTime(500),
-        switchMap((email) => userService.checkEmail(email)),
+        switchMap((email) => authService.checkEmail(email)),
         take(1),
         map((exists) => (exists ? { emailExists: true } : null))
       );

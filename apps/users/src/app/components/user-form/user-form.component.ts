@@ -1,3 +1,4 @@
+import { AuthService } from '@nx-dashboard/auth/data-access';
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -11,7 +12,7 @@ import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { IUser, IUserRole } from '@nx-dashboard/core/api-types';
 import { UserService } from '../../services/user.service';
-import { UserValidators } from '../../validators/user.validator';
+import { UserValidators } from '@nx-dashboard/auth/data-access';
 
 @Component({
   selector: 'app-user-form',
@@ -32,7 +33,8 @@ export class UserFormComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private toastr: ToastrService,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -51,14 +53,47 @@ export class UserFormComponent implements OnInit {
         console.error('Error reading route params:', err);
       },
     });
+
+    // Subscribe to value changes
+    this.userForm.get('username')?.valueChanges.subscribe((value) => {
+      if (this.isEditMode && value === this.originalUsername) {
+        this.userForm.get('username')?.clearAsyncValidators();
+      } else {
+        this.userForm
+          .get('username')
+          ?.setAsyncValidators(UserValidators.usernameExists(this.authService));
+      }
+      this.userForm
+        .get('username')
+        ?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    this.userForm.get('email')?.valueChanges.subscribe((value) => {
+      if (this.isEditMode && value === this.originalEmail) {
+        this.userForm.get('email')?.clearAsyncValidators();
+      } else {
+        this.userForm
+          .get('email')
+          ?.setAsyncValidators(UserValidators.emailExists(this.authService));
+      }
+      this.userForm.get('email')?.updateValueAndValidity({ emitEvent: false });
+    });
   }
 
   private initForm(): void {
     this.userForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(6)]],
+      username: [
+        '',
+        [Validators.required, Validators.minLength(6)],
+        UserValidators.usernameExists(this.authService),
+      ],
       // password: ['', [Validators.required, Validators.minLength(6)]],
       fullName: [''],
-      email: ['', [Validators.required, Validators.email]],
+      email: [
+        '',
+        [Validators.required, Validators.email],
+        UserValidators.emailExists(this.authService),
+      ],
       role: [IUserRole.USER, [Validators.required]],
       profilePicture: [''],
       status: ['active'],
@@ -69,26 +104,9 @@ export class UserFormComponent implements OnInit {
   loadUser(id: string): void {
     this.userService.getUserById(id).subscribe({
       next: (user) => {
-        this.userForm.patchValue(user);
         this.originalUsername = user.username;
         this.originalEmail = user.email;
-
-        this.userForm
-          .get('username')
-          ?.setAsyncValidators(
-            UserValidators.usernameExists(
-              this.userService,
-              this.originalUsername
-            )
-          );
-
-        this.userForm
-          .get('email')
-          ?.setAsyncValidators(
-            UserValidators.emailExists(this.userService, this.originalEmail)
-          );
-
-        this.userForm.updateValueAndValidity();
+        this.userForm.patchValue(user);
       },
       error: (err) => {
         console.error('Error loading user:', err);
@@ -117,6 +135,8 @@ export class UserFormComponent implements OnInit {
         )
         .subscribe({
           next: () => {
+            console.log('ok');
+
             this.toastr.success('User updated successfully!');
             this.router.navigate(['/users']);
           },

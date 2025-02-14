@@ -5,11 +5,14 @@
   <!-- Navigation -->
   <nav class="ml-10 flex-1">
     <ul class="flex gap-6 text-gray-700 font-medium">
+      @if(isLoggedIn()){
       <li><a class="hover:text-blue-600 transition" routerLink="/categories">Categories</a></li>
       <li><a class="hover:text-blue-600 transition" routerLink="/products">Products</a></li>
       @if(isAdmin()){
       <li><a class="hover:text-blue-600 transition" routerLink="/users">Users</a></li>
       }
+      }
+      <li><a class="hover:text-blue-600 transition" routerLink="/lifecycle-hooks">Lifecycle hooks</a></li>
     </ul>
   </nav>
 

@@ -1,0 +1,134 @@
+<div class="w-full overflow-hidden">
+  <!-- Table Header with Filter and Actions -->
+  <div class="flex justify-between items-center mb-4">
+    <ng-content select="[tableHeader]"></ng-content>
+  </div>
+
+  <!-- Main Table -->
+  <div class="overflow-x-auto rounded-lg border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200">
+      <!-- Table Headers -->
+      <thead class="bg-gray-50">
+        <tr>
+          <ng-container *ngFor="let col of config.columns">
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                [ngStyle]="{'width': col.width}">
+              {{ col.header }}
+            </th>
+          </ng-container>
+          <!-- <th *ngIf="config.showActions" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th> -->
+        </tr>
+      </thead>
+
+      <!-- Table Body -->
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngIf="isLoading" class="animate-pulse">
+          <td [attr.colspan]="config.showActions ? config.columns.length + 1 : config.columns.length" class="px-6 py-4">
+            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+          </td>
+        </tr>
+
+        <ng-container *ngIf="!isLoading">
+          <tr *ngFor="let item of data" class="hover:bg-gray-50">
+            <ng-container *ngFor="let col of config.columns">
+              <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
+                <ng-container *ngIf="col.template">
+                  <ng-container *ngTemplateOutlet="cellTemplate; context: { $implicit: item, column: col }">
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="!col.template">
+                  <ng-container *ngIf="col.clickable">
+                    <button
+                      class="text-inherit hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      (click)="col.onClick && col.onClick(item)"
+                      (keyup.enter)="col.onClick && col.onClick(item)"
+                      role="button"
+                      [attr.aria-label]="'Click ' + (col.cell ? col.cell(item) : item[col.key])">
+                      <ng-container *ngIf="col.cell; else defaultClickCell">
+                        {{ col.cell(item) }}
+                      </ng-container>
+                      <ng-template #defaultClickCell>
+                        {{ item[col.key] }}
+                      </ng-template>
+                    </button>
+                  </ng-container>
+                  <ng-container *ngIf="!col.clickable">
+                    <ng-container *ngIf="col.cell; else defaultCell">
+                      {{ col.cell(item) }}
+                    </ng-container>
+                    <ng-template #defaultCell>
+                      {{ item[col.key] }}
+                    </ng-template>
+                  </ng-container>
+                </ng-container>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <td *ngIf="config.showActions" class="px-6 py-2 whitespace-nowrap text-right text-sm font-medium space-x-2">
+              <ng-container *ngFor="let action of actions">
+                <button
+                  mat-icon-button
+                  [color]="action.color || 'primary'"
+                  (click)="action.onClick(item)"
+                  [matTooltip]="action.label">
+                  <mat-icon *ngIf="action.icon">{{action.icon}}</mat-icon>
+                  <span *ngIf="!action.icon">{{action.label}}</span>
+                </button>
+              </ng-container>
+            </td>
+          </tr>
+
+          <!-- No Data Message -->
+          <tr *ngIf="!isLoading && (!data || data.length === 0)">
+            <td [attr.colspan]="config.showActions ? config.columns.length + 1 : config.columns.length"
+                class="px-6 py-4 text-center text-sm text-gray-500">
+              {{ noDataMessage }}
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="config.showPagination" class="py-3 flex items-center justify-between">
+    <div class="flex-1 flex justify-between sm:hidden">
+      <button mat-button
+              [disabled]="currentPage === 0"
+              (click)="onPageChange(currentPage - 1)">
+        Previous
+      </button>
+      <button mat-button
+              [disabled]="(currentPage + 1) * pageSize >= totalItems"
+              (click)="onPageChange(currentPage + 1)">
+        Next
+      </button>
+    </div>
+    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+      <div>
+        <p class="text-sm text-gray-700">
+          Showing
+          <span class="font-medium">{{ currentPage * pageSize + 1 }}</span>
+          to
+          <span class="font-medium">
+            {{ Math.min((currentPage + 1) * pageSize, totalItems) }}
+          </span>
+          of
+          <span class="font-medium">{{ totalItems }}</span>
+          results
+        </p>
+      </div>
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="config.pageSizeOptions || [5, 10, 25, 100]"
+        [pageIndex]="currentPage"
+        (page)="onPageEvent($event)"
+        aria-label="Select page">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

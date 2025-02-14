@@ -1,52 +1,71 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ToastrService } from 'ngx-toastr';
-
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatDialog } from '@angular/material/dialog';
-
-import { UserService } from '../../services/user.service';
-import { catchError, map, of, startWith, switchMap, tap } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { IUser, IUserRole, IUserTable } from '@nx-dashboard/core/api-types';
-import { DialogConfirmComponent } from '@nx-dashboard/ui';
+import { TableComponent, TableConfig, TableAction, DialogConfirmComponent } from '@nx-dashboard/ui';
+import { PageEvent } from '@angular/material/paginator';
+import { ToastrService } from 'ngx-toastr';
+import { UserService } from '../../services/user.service';
+import { MatDialog } from '@angular/material/dialog';
+import { catchError, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-list-user',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatProgressBarModule,
-  ],
+  imports: [CommonModule, FormsModule, TableComponent],
   templateUrl: './list-user.component.html',
 })
-export class ListUserComponent implements AfterViewInit {
-  displayedColumns: string[] = [
-    'position',
-    'username',
-    'email',
-    'fullName',
-    'role',
-    'actions',
-  ];
-  roles: string[] = Object.values(IUserRole);
-  usersTable!: IUserTable;
-  totalData!: number;
-  usersData!: IUser[];
-
-  dataSource = new MatTableDataSource<IUser>([]);
-  selectedRole = '';
+export class ListUserComponent implements OnInit {
+  users: IUser[] = [];
   isLoading = false;
+  roles: string[] = Object.values(IUserRole);
+  selectedRole = '';
+  currentPage = 0;
+  pageSize = 10;
+  totalItems = 0;
 
-  pageSizeOptions = [5, 10, 25, 50];
+  tableConfig: TableConfig<IUser> = {
+    columns: [
+      {
+        key: 'username',
+        header: 'Username',
+        cell: (item: IUser) => item.username,
+        clickable: true,
+        onClick: (item: IUser) => this.onViewUser(item._id),
+      },
+      {
+        key: 'email',
+        header: 'Email',
+        cell: (item: IUser) => item.email,
+      },
+      {
+        key: 'fullName',
+        header: 'Full Name',
+        cell: (item: IUser) => item.fullName || '-',
+      },
+      {
+        key: 'role',
+        header: 'Role',
+        cell: (item: IUser) => item.role,
+      },
+    ],
+    showActions: true,
+    showPagination: true,
+  };
 
-  @ViewChild('paginator') paginator!: MatPaginator;
+  tableActions: TableAction[] = [
+    {
+      label: 'Edit',
+      icon: 'edit',
+      onClick: (item: IUser) => this.onViewUser(item._id),
+    },
+    {
+      label: 'Delete',
+      icon: 'delete',
+      onClick: (item: IUser) => this.onDeleteUser(item._id),
+    },
+  ];
 
   constructor(
     private router: Router,
@@ -56,33 +75,29 @@ export class ListUserComponent implements AfterViewInit {
     private dialog: MatDialog
   ) {}
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-
-    this.paginator.page
-      .pipe(
-        startWith({}),
-        tap(() => setTimeout(() => (this.isLoading = true))),
-        switchMap(() =>
-          this.userService
-            .getUsers(this.paginator.pageIndex + 1, this.paginator.pageSize)
-            .pipe(catchError(() => of(null)))
-        ),
-        tap(() => setTimeout(() => (this.isLoading = false))),
-        map((data) => {
-          if (data == null) return [];
-          this.totalData = data.total;
-          return data.data;
-        })
-      )
-      .subscribe((data) => {
-        this.usersData = data;
-        this.dataSource = new MatTableDataSource(this.usersData);
-      });
+  ngOnInit(): void {
+    this.loadUsers();
   }
 
-  applyFilter(): void {
-    this.dataSource.filter = this.selectedRole.trim().toLowerCase();
+  loadUsers(page: number = this.currentPage + 1): void {
+    this.isLoading = true;
+    this.userService.getUsers(page, this.pageSize).subscribe({
+      next: (data: IUserTable) => {
+        this.users = data.data;
+        this.totalItems = data.total;
+        this.currentPage = page - 1;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading users', err);
+        this.isLoading = false;
+      },
+    });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageSize = event.pageSize;
+    this.loadUsers(event.pageIndex + 1);
   }
 
   onAddUser(): void {
@@ -118,10 +133,7 @@ export class ListUserComponent implements AfterViewInit {
       .pipe(
         tap(() => this.toastr.success('User deleted successfully!')),
         switchMap(() => {
-          return this.userService.getUsers(
-            this.paginator.pageIndex + 1,
-            this.paginator.pageSize
-          );
+          return this.userService.getUsers(this.currentPage + 1, this.pageSize);
         }),
         catchError((err) => {
           this.toastr.error('Error deleting user!', err.message);
@@ -130,9 +142,15 @@ export class ListUserComponent implements AfterViewInit {
       )
       .subscribe((data) => {
         if (data) {
-          this.totalData = data.total;
-          this.dataSource.data = data.data;
+          this.users = data.data;
+          this.totalItems = data.total;
         }
       });
+  }
+
+  applyFilter(): void {
+    // Implement role filtering logic here
+    // You might want to add this to your API call or filter locally
+    console.log('Filtering by role:', this.selectedRole);
   }
 }

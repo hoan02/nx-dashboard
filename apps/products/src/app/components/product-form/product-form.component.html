@@ -55,16 +55,16 @@
     </div>
 
     <!-- Category Selection -->
-    <div class="mb-4" formGroupName="categoryId">
+    <div class="mb-4" formGroupName="category">
       <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
       <select id="category" formControlName="_id" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
         <option *ngFor="let category of categories" [value]="category._id">
           {{ category.name }}
         </option>
       </select>
-      <div *ngIf="productForm.get('categoryId._id')?.touched && productForm.get('categoryId._id')?.invalid"
+      <div *ngIf="productForm.get('category._id')?.touched && productForm.get('category._id')?.invalid"
         class="text-red-500 text-xs mt-1">
-        <div *ngIf="productForm.get('categoryId._id')?.hasError('required')">Category is required.</div>
+        <div *ngIf="productForm.get('category._id')?.hasError('required')">Category is required.</div>
       </div>
     </div>
 

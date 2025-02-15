@@ -44,7 +44,7 @@ export class ListProductComponent implements OnInit {
       {
         key: 'category',
         header: 'Category',
-        cell: (item: IProduct) => item.categoryId?.name || '-',
+        cell: (item: IProduct) => item.category?.name || '-',
       },
     ],
     showActions: true,

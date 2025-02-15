@@ -36,6 +36,7 @@ export class ProductFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadCategories();
     this.initForm();
 
     this.route.paramMap.subscribe({
@@ -51,8 +52,6 @@ export class ProductFormComponent implements OnInit {
         console.error('Error parsing route parameters', err);
       },
     });
-
-    this.loadCategories();
   }
 
   private initForm(): void {
@@ -68,7 +67,7 @@ export class ProductFormComponent implements OnInit {
       description: ['', [Validators.maxLength(1000)]],
       image: ['', [Validators.required, Validators.pattern('https?://.+')]],
       price: [0, [Validators.required, Validators.min(0)]],
-      categoryId: this.fb.group({
+      category: this.fb.group({
         _id: ['', Validators.required],
         name: [''],
       }),
@@ -79,6 +78,7 @@ export class ProductFormComponent implements OnInit {
     this.productService.getProductById(id).subscribe({
       next: (product) => {
         this.productForm.patchValue(product);
+        console.log('data', product);
       },
       error: (err) => {
         console.error('Error fetching product details', err);
@@ -89,7 +89,7 @@ export class ProductFormComponent implements OnInit {
   loadCategories(): void {
     this.categoryService.getCategories().subscribe({
       next: (data: any) => {
-        this.categories = data;
+        this.categories = data.data;
       },
       error: (err: any) => {
         console.error('Error loading categories', err);

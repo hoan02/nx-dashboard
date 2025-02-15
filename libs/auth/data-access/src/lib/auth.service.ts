@@ -78,6 +78,7 @@ export class AuthService {
     return this.sessionService.refreshToken().pipe(
       catchError((error) => {
         console.log('Refresh token failed: ' + error);
+        this.clearUserData();
         this.navigationService.navigateToLogin();
         return throwError(() => error);
       })

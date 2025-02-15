@@ -10,9 +10,9 @@
   <ng-container *ngIf="isLoggedIn && currentUser; else loginButton">
     <button mat-button [matMenuTriggerFor]="userMenu">
       <div class="flex items-center">
-        <img width="32" height="32" [src]="currentUser?.profilePicture || 'images/avt-default.png'" class="rounded-full"
-          [alt]="currentUser?.fullName || currentUser?.username">
-        <p class="text-gray-700 mx-2">{{ currentUser?.fullName || currentUser?.username }}</p>
+        <img width="32" height="32" [src]="currentUser.profilePicture || 'images/avt-default.png'" class="rounded-full"
+          [alt]="currentUser.fullName || currentUser.username">
+        <p class="text-gray-700 mx-2">{{ currentUser.fullName || currentUser.username }}</p>
       </div>
     </button>
 

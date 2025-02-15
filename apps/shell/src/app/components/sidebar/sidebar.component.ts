@@ -50,6 +50,10 @@ export class SidebarComponent {
       label: 'Danh mục',
       route: '/categories',
     },
+    {
+      icon: 'category',
+      label: 'Lifecycle hooks',
+      route: '/lifecycle-hooks',
+    },
   ];
-
 }

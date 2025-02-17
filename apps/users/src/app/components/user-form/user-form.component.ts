@@ -1,3 +1,4 @@
+import { CommonModule, Location } from '@angular/common';
 import { AuthService } from '@nx-dashboard/auth/data-access';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
@@ -6,9 +7,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { CommonModule } from '@angular/common';
 import { IUser, IUserRole } from '@nx-dashboard/core/api-types';
 import { UserService } from '../../services/user.service';
 import { UserValidators } from '@nx-dashboard/auth/data-access';
@@ -32,10 +32,10 @@ export class UserFormComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router,
     private toastr: ToastrService,
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -143,7 +143,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Lỗi khi tải thông tin người dùng:', err);
           this.toastr.error('Không thể tải thông tin người dùng');
-          this.router.navigate(['/users']);
+          this.goBack();
         },
       });
   }
@@ -165,7 +165,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
           ? 'Cập nhật người dùng thành công!'
           : 'Tạo người dùng thành công!';
         this.toastr.success(message);
-        this.router.navigate(['/users']);
+        this.goBack();
       },
       error: (err) => {
         console.error('Lỗi khi lưu thông tin người dùng:', err);
@@ -178,6 +178,6 @@ export class UserFormComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.router.navigate(['/users']);
+    this.location.back();
   }
 }

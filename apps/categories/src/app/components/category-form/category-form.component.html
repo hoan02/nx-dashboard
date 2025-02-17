@@ -17,7 +17,7 @@
       <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched"
         class="text-red-500 text-sm mt-1">
         <span *ngIf="categoryForm.get('name')?.hasError('required')">Name is required.</span>
-        <span *ngIf="categoryForm.get('name')?.hasError('minlength')">Name must be at least 3 characters long.</span>
+        <span *ngIf="categoryForm.get('name')?.hasError('minlength')">Name must be at least 1 characters long.</span>
       </div>
     </div>
 

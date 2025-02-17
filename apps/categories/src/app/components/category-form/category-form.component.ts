@@ -52,7 +52,7 @@ export class CategoryFormComponent implements OnInit {
 
   private initForm(): void {
     this.categoryForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(1)]],
       description: ['', [Validators.maxLength(200)]],
     });
   }

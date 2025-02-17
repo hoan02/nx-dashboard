@@ -1,6 +1,5 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input, OnInit } from '@angular/core';
 
 import {
   FormBuilder,
@@ -20,15 +19,15 @@ import { CategoryService } from 'categories/CategoryService';
   templateUrl: './product-form.component.html',
 })
 export class ProductFormComponent implements OnInit {
+  @Input() productId = '';
+
   productForm!: FormGroup;
-  productId = '';
   categories: ICategory[] = [];
   isEditMode = false;
   isSubmitting = false;
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
     private toastr: ToastrService,
     private productService: ProductService,
     private categoryService: CategoryService,
@@ -38,20 +37,10 @@ export class ProductFormComponent implements OnInit {
   ngOnInit(): void {
     this.loadCategories();
     this.initForm();
-
-    this.route.paramMap.subscribe({
-      next: (params) => {
-        const id = params.get('id');
-        if (id) {
-          this.productId = id;
-          this.isEditMode = true;
-          this.loadProduct(id);
-        }
-      },
-      error: (err) => {
-        console.error('Error parsing route parameters', err);
-      },
-    });
+    if (this.productId != '') {
+      this.isEditMode = true;
+      this.loadProduct(this.productId);
+    }
   }
 
   private initForm(): void {

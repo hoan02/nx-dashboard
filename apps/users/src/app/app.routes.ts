@@ -12,7 +12,7 @@ export const usersRoutes: Routes = [
     component: UserFormComponent,
   },
   {
-    path: ':id',
+    path: ':userId',
     component: UserFormComponent,
   },
 ];

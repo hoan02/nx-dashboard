@@ -1,13 +1,12 @@
 import { CommonModule, Location } from '@angular/common';
 import { AuthService } from '@nx-dashboard/auth/data-access';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { IUser, IUserRole } from '@nx-dashboard/core/api-types';
 import { UserService } from '../../services/user.service';
@@ -21,8 +20,8 @@ import { take } from 'rxjs';
   templateUrl: './user-form.component.html',
 })
 export class UserFormComponent implements OnInit {
+  @Input() userId = '';
   userForm!: FormGroup;
-  userId = '';
   userRoles = Object.values(IUserRole);
   originalUsername = '';
   originalEmail = '';
@@ -30,7 +29,6 @@ export class UserFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
     private toastr: ToastrService,
     private userService: UserService,
     private authService: AuthService,
@@ -39,7 +37,10 @@ export class UserFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.initRouteParams();
+    if (this.userId != '') {
+      this.isEditMode = true;
+      this.loadUser(this.userId);
+    }
     this.setupFormValidation();
   }
 
@@ -66,23 +67,6 @@ export class UserFormComponent implements OnInit {
       profilePicture: [''],
       status: ['active'],
       phone: ['', [Validators.pattern(/^\+?[0-9\s]*$/)]],
-    });
-  }
-
-  private initRouteParams(): void {
-    this.route.paramMap.pipe(take(1)).subscribe({
-      next: (params) => {
-        const id = params.get('id');
-        if (id) {
-          this.userId = id;
-          this.isEditMode = true;
-          this.loadUser(id);
-        }
-      },
-      error: (err) => {
-        console.error('Lỗi khi đọc tham số route:', err);
-        this.toastr.error('Không thể tải thông tin người dùng');
-      },
     });
   }
 

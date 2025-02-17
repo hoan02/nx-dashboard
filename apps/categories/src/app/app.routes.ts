@@ -12,7 +12,7 @@ export const categoriesRoutes: Routes = [
     component: CategoryFormComponent,
   },
   {
-    path: ':id',
+    path: ':categoryId',
     component: CategoryFormComponent,
   },
 ];

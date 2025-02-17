@@ -37,7 +37,7 @@ export class UserFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    if (this.userId != '') {
+    if (this.userId === 'add') {
       this.isEditMode = true;
       this.loadUser(this.userId);
     }

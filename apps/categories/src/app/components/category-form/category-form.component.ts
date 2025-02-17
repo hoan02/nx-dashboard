@@ -32,7 +32,7 @@ export class CategoryFormComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
 
-    if (this.categoryId != '') {
+    if (this.categoryId === 'add') {
       this.isEditMode = true;
       this.loadCategory(this.categoryId);
     }

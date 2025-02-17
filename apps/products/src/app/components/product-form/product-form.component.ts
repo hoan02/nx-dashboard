@@ -37,7 +37,7 @@ export class ProductFormComponent implements OnInit {
   ngOnInit(): void {
     this.loadCategories();
     this.initForm();
-    if (this.productId != '') {
+    if (this.productId === 'add') {
       this.isEditMode = true;
       this.loadProduct(this.productId);
     }

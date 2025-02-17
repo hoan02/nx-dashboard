@@ -12,7 +12,7 @@ export const productsRoutes: Route[] = [
     component: ProductFormComponent,
   },
   {
-    path: ':id',
+    path: ':productId',
     component: ProductFormComponent,
   },
 ];

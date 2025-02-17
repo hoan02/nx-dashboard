@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IUser, IUserRole, IUserTable } from '@nx-dashboard/core/api-types';
@@ -8,6 +8,7 @@ import {
   TableConfig,
   TableAction,
   DialogConfirmComponent,
+  TableSelectAction,
 } from '@nx-dashboard/ui';
 import { PageEvent } from '@angular/material/paginator';
 import { ToastrService } from 'ngx-toastr';
@@ -22,10 +23,10 @@ import { catchError, of, switchMap, tap } from 'rxjs';
   templateUrl: './list-user.component.html',
 })
 export class ListUserComponent implements OnInit {
+  @ViewChild(TableComponent) table!: TableComponent;
+
   users: IUser[] = [];
   isLoading = false;
-  roles: string[] = Object.values(IUserRole);
-  selectedRole = '';
   currentPage = 0;
   pageSize = 10;
   totalItems = 0;
@@ -62,6 +63,15 @@ export class ListUserComponent implements OnInit {
     ],
     showActions: true,
     showPagination: true,
+    selectable: true,
+    selectActions: [
+      {
+        label: 'Delete Selected',
+        icon: 'delete',
+        color: 'error',
+        onClick: (items: IUser[]) => this.onDeleteUsers(items)
+      }
+    ]
   };
 
   tableActions: TableAction[] = [
@@ -73,6 +83,7 @@ export class ListUserComponent implements OnInit {
     {
       label: 'Delete',
       icon: 'delete',
+      color: 'error',
       onClick: (item: IUser) => this.onDeleteUser(item._id),
     },
   ];
@@ -137,11 +148,31 @@ export class ListUserComponent implements OnInit {
     });
   }
 
+  onDeleteUsers(users: IUser[]): void {
+    if (!users.length) return;
+
+    const dialogRef = this.dialog.open(DialogConfirmComponent, {
+      data: {
+        message: `Bạn có chắc chắn muốn xóa ${users.length} người dùng đã chọn?`,
+        labelButton: 'Xóa',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'confirm') {
+        this.deleteUsers(users.map(user => user._id));
+      }
+    });
+  }
+
   private deleteUser(id: string): void {
     this.userService
       .deleteUser(id)
       .pipe(
-        tap(() => this.toastr.success('Xóa người dùng thành công!')),
+        tap(() => {
+          this.toastr.success('Xóa người dùng thành công!');
+          this.table.resetSelection();
+        }),
         switchMap(() => {
           return this.userService.getUsers(this.currentPage + 1, this.pageSize);
         }),
@@ -158,9 +189,27 @@ export class ListUserComponent implements OnInit {
       });
   }
 
-  applyFilter(): void {
-    // Implement role filtering logic here
-    // You might want to add this to your API call or filter locally
-    console.log('Filtering by role:', this.selectedRole);
+  private deleteUsers(ids: string[]): void {
+    this.userService
+      .deleteUsers(ids)
+      .pipe(
+        tap(() => {
+          this.toastr.success('Xóa người dùng thành công!');
+          this.table.resetSelection();
+        }),
+        switchMap(() => {
+          return this.userService.getUsers(this.currentPage + 1, this.pageSize);
+        }),
+        catchError((err) => {
+          this.toastr.error('Lỗi khi xóa người dùng!', err.message);
+          return of(null);
+        })
+      )
+      .subscribe((data) => {
+        if (data) {
+          this.users = data.data;
+          this.totalItems = data.total;
+        }
+      });
   }
 }

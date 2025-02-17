@@ -3,33 +3,15 @@
   <div class="flex justify-between items-center mb-6">
     <div>
       <h1 class="text-2xl font-semibold text-gray-800">Users</h1>
-      <!-- <div class="mt-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="roleFilter">Filter by Role</label>
-        <select id="roleFilter"
-                class="w-64 p-2 border rounded text-gray-700"
-                [(ngModel)]="selectedRole"
-                (change)="applyFilter()">
-          <option value="">All Roles</option>
-          <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
-        </select>
-      </div> -->
     </div>
-    <button class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
-            (click)="onAddUser()">
+    <button class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700" (click)="onAddUser()">
       + Add User
     </button>
   </div>
 
   <!-- Users Table -->
-  <lib-table
-    [data]="users"
-    [config]="tableConfig"
-    [actions]="tableActions"
-    [isLoading]="isLoading"
-    [noDataMessage]="'No users available.'"
-    [totalItems]="totalItems"
-    [currentPage]="currentPage"
-    [pageSize]="pageSize"
+  <lib-table [data]="users" [config]="tableConfig" [actions]="tableActions" [isLoading]="isLoading"
+    [noDataMessage]="'No users available.'" [totalItems]="totalItems" [currentPage]="currentPage" [pageSize]="pageSize"
     (pageChange)="onPageChange($event)">
   </lib-table>
 </div>

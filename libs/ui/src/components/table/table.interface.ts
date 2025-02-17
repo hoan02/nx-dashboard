@@ -5,8 +5,8 @@ export interface TableColumn<T> {
   template?: boolean;
   sortable?: boolean;
   width?: string;
-  onClick?: (item: T) => void; // Thêm onClick handler
-  clickable?: boolean; // Flag để đánh dấu cell có thể click
+  onClick?: (item: T) => void;
+  clickable?: boolean;
 }
 
 export interface TableConfig<T> {
@@ -14,6 +14,8 @@ export interface TableConfig<T> {
   showPagination?: boolean;
   pageSizeOptions?: number[];
   showActions?: boolean;
+  selectable?: boolean; // Flag để enable tính năng select rows
+  selectActions?: TableSelectAction[]; // Các action cho selected rows
 }
 
 export interface TableAction {
@@ -21,6 +23,13 @@ export interface TableAction {
   icon?: string;
   color?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info';
   onClick: (item: any) => void;
+}
+
+export interface TableSelectAction {
+  label: string;
+  icon?: string;
+  color?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info';
+  onClick: (selectedItems: any[]) => void;
 }
 
 export interface TablePaginationEvent {

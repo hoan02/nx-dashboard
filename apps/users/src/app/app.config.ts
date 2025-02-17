@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideToastr } from 'ngx-toastr';
 import {
   provideHttpClient,
@@ -11,7 +11,7 @@ import { usersRoutes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(usersRoutes),
+    provideRouter(usersRoutes, withComponentInputBinding()),
     provideHttpClient(withInterceptorsFromDi()),
     provideAnimationsAsync(),
     provideToastr({

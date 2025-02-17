@@ -33,6 +33,10 @@ export class UserService {
     return this.http.delete<void>(`${this.prefixUrl}/${id}`);
   }
 
+  deleteUsers(ids: string[]): Observable<void> {
+    return this.http.post<void>(`${this.prefixUrl}/delete-many`, { ids });
+  }
+
   checkUsername(username: string): Observable<boolean> {
     const params = new HttpParams().set('username', username);
     return this.http.get<boolean>(`${this.prefixUrl}/check-username`, {

@@ -1,6 +1,5 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -18,36 +17,25 @@ import { ICategory } from '@nx-dashboard/core/api-types';
   templateUrl: './category-form.component.html',
 })
 export class CategoryFormComponent implements OnInit {
+  @Input() categoryId = '';
   categoryForm!: FormGroup;
-  categoryId = '';
   isEditMode = false;
   isSubmitting = false;
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
     private toastr: ToastrService,
     private categoryService: CategoryService,
     private location: Location
   ) {}
-  // private fb = inject(FormBuilder);
 
   ngOnInit(): void {
     this.initForm();
 
-    this.route.paramMap.subscribe({
-      next: (params) => {
-        const id = params.get('id');
-        if (id) {
-          this.categoryId = id;
-          this.isEditMode = true;
-          this.loadCategory(id);
-        }
-      },
-      error: (err) => {
-        console.error('Error reading route params:', err);
-      },
-    });
+    if (this.categoryId === 'add') {
+      this.isEditMode = true;
+      this.loadCategory(this.categoryId);
+    }
   }
 
   private initForm(): void {

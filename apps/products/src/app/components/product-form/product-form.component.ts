@@ -1,5 +1,6 @@
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import {
   FormBuilder,
@@ -7,7 +8,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
 import { ProductService } from '../../services/product.service';
@@ -29,10 +29,10 @@ export class ProductFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router,
     private toastr: ToastrService,
     private productService: ProductService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -119,7 +119,7 @@ export class ProductFormComponent implements OnInit {
         .subscribe({
           next: () => {
             this.toastr.success('Product updated successfully!');
-            this.router.navigate(['/products']);
+            this.goBack();
           },
           error: (err) => {
             console.error('Error updating product', err.message);
@@ -138,7 +138,7 @@ export class ProductFormComponent implements OnInit {
         .subscribe({
           next: () => {
             this.toastr.success('Product created successfully!');
-            this.router.navigate(['/products']);
+            this.goBack();
           },
           error: (err) => {
             console.error('Error creating product', err.message);
@@ -149,6 +149,6 @@ export class ProductFormComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/products']);
+    this.location.back();
   }
 }

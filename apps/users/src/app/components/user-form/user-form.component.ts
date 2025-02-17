@@ -1,18 +1,18 @@
+import { CommonModule, Location } from '@angular/common';
 import { AuthService } from '@nx-dashboard/auth/data-access';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { CommonModule } from '@angular/common';
 import { IUser, IUserRole } from '@nx-dashboard/core/api-types';
 import { UserService } from '../../services/user.service';
 import { UserValidators } from '@nx-dashboard/auth/data-access';
-import { Subject, takeUntil } from 'rxjs';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-user-form',
@@ -20,33 +20,27 @@ import { Subject, takeUntil } from 'rxjs';
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './user-form.component.html',
 })
-export class UserFormComponent implements OnInit, OnDestroy {
+export class UserFormComponent implements OnInit {
   userForm!: FormGroup;
   userId = '';
   userRoles = Object.values(IUserRole);
   originalUsername = '';
   originalEmail = '';
   isEditMode = false;
-  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router,
     private toastr: ToastrService,
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
     this.initForm();
     this.initRouteParams();
     this.setupFormValidation();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   private initForm(): void {
@@ -76,7 +70,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
   }
 
   private initRouteParams(): void {
-    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe({
+    this.route.paramMap.pipe(take(1)).subscribe({
       next: (params) => {
         const id = params.get('id');
         if (id) {
@@ -94,46 +88,40 @@ export class UserFormComponent implements OnInit, OnDestroy {
 
   private setupFormValidation(): void {
     // Username validation
-    this.userForm
-      .get('username')
-      ?.valueChanges.pipe(takeUntil(this.destroy$))
-      .subscribe((value) => {
-        const usernameControl = this.userForm.get('username');
-        if (!usernameControl) return;
+    this.userForm.get('username')?.valueChanges.subscribe((value) => {
+      const usernameControl = this.userForm.get('username');
+      if (!usernameControl) return;
 
-        if (this.isEditMode && value === this.originalUsername) {
-          usernameControl.setAsyncValidators(null);
-        } else {
-          usernameControl.setAsyncValidators(
-            UserValidators.usernameExists(this.authService)
-          );
-        }
-        usernameControl.updateValueAndValidity({ emitEvent: false });
-      });
+      if (this.isEditMode && value === this.originalUsername) {
+        usernameControl.setAsyncValidators(null);
+      } else {
+        usernameControl.setAsyncValidators(
+          UserValidators.usernameExists(this.authService)
+        );
+      }
+      usernameControl.updateValueAndValidity({ emitEvent: false });
+    });
 
     // Email validation
-    this.userForm
-      .get('email')
-      ?.valueChanges.pipe(takeUntil(this.destroy$))
-      .subscribe((value) => {
-        const emailControl = this.userForm.get('email');
-        if (!emailControl) return;
+    this.userForm.get('email')?.valueChanges.subscribe((value) => {
+      const emailControl = this.userForm.get('email');
+      if (!emailControl) return;
 
-        if (this.isEditMode && value === this.originalEmail) {
-          emailControl.setAsyncValidators(null);
-        } else {
-          emailControl.setAsyncValidators(
-            UserValidators.emailExists(this.authService)
-          );
-        }
-        emailControl.updateValueAndValidity({ emitEvent: false });
-      });
+      if (this.isEditMode && value === this.originalEmail) {
+        emailControl.setAsyncValidators(null);
+      } else {
+        emailControl.setAsyncValidators(
+          UserValidators.emailExists(this.authService)
+        );
+      }
+      emailControl.updateValueAndValidity({ emitEvent: false });
+    });
   }
 
   private loadUser(id: string): void {
     this.userService
       .getUserById(id)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(take(1))
       .subscribe({
         next: (user) => {
           this.originalUsername = user.username;
@@ -143,7 +131,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Lỗi khi tải thông tin người dùng:', err);
           this.toastr.error('Không thể tải thông tin người dùng');
-          this.router.navigate(['/users']);
+          this.goBack();
         },
       });
   }
@@ -159,13 +147,13 @@ export class UserFormComponent implements OnInit, OnDestroy {
       ? this.userService.updateUser(this.userId, userData)
       : this.userService.createUser(userData);
 
-    operation.pipe(takeUntil(this.destroy$)).subscribe({
+    operation.pipe(take(1)).subscribe({
       next: () => {
         const message = this.isEditMode
           ? 'Cập nhật người dùng thành công!'
           : 'Tạo người dùng thành công!';
         this.toastr.success(message);
-        this.router.navigate(['/users']);
+        this.goBack();
       },
       error: (err) => {
         console.error('Lỗi khi lưu thông tin người dùng:', err);
@@ -178,6 +166,6 @@ export class UserFormComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.router.navigate(['/users']);
+    this.location.back();
   }
 }

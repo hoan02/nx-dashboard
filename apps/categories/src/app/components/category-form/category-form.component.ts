@@ -1,6 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
@@ -26,9 +26,9 @@ export class CategoryFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router,
     private toastr: ToastrService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private location: Location
   ) {}
   // private fb = inject(FormBuilder);
 
@@ -52,7 +52,7 @@ export class CategoryFormComponent implements OnInit {
 
   private initForm(): void {
     this.categoryForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(1)]],
       description: ['', [Validators.maxLength(200)]],
     });
   }
@@ -70,7 +70,7 @@ export class CategoryFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.categoryForm.invalid) {
-      this.categoryForm.markAllAsTouched(); // Đánh dấu tất cả các control để hiện lỗi
+      this.categoryForm.markAllAsTouched();
       return;
     }
 
@@ -90,7 +90,7 @@ export class CategoryFormComponent implements OnInit {
         .subscribe({
           next: () => {
             this.toastr.success('Category updated successfully!');
-            this.router.navigate(['/categories']);
+            this.goBack();
           },
           error: (err) => {
             console.log('Error updating category: ' + err.message);
@@ -109,7 +109,7 @@ export class CategoryFormComponent implements OnInit {
         .subscribe({
           next: () => {
             this.toastr.success('Category created successfully!');
-            this.router.navigate(['/categories']);
+            this.goBack();
           },
           error: (err) => {
             console.error('Error creating category:', err.message);
@@ -120,6 +120,6 @@ export class CategoryFormComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/categories']);
+    this.location.back();
   }
 }

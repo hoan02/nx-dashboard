@@ -1,6 +1,5 @@
 import { CommonModule, Location } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-
 import {
   FormBuilder,
   FormGroup,
@@ -8,13 +7,14 @@ import {
   Validators,
 } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { finalize } from 'rxjs';
+import { finalize, take } from 'rxjs';
 import { ProductService } from '../../services/product.service';
 import { ICategory, IProduct } from '@nx-dashboard/core/api-types';
 import { CategoryService } from 'categories/CategoryService';
 
 @Component({
   selector: 'app-product-form',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './product-form.component.html',
 })
@@ -35,9 +35,9 @@ export class ProductFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadCategories();
     this.initForm();
-    if (this.productId === 'add') {
+    this.loadCategories();
+    if (this.productId && this.productId !== 'add') {
       this.isEditMode = true;
       this.loadProduct(this.productId);
     }
@@ -63,27 +63,35 @@ export class ProductFormComponent implements OnInit {
     });
   }
 
-  loadProduct(id: string): void {
-    this.productService.getProductById(id).subscribe({
-      next: (product) => {
-        this.productForm.patchValue(product);
-        console.log('data', product);
-      },
-      error: (err) => {
-        console.error('Error fetching product details', err);
-      },
-    });
+  private loadProduct(id: string): void {
+    this.productService
+      .getProductById(id)
+      .pipe(take(1))
+      .subscribe({
+        next: (product) => {
+          this.productForm.patchValue(product);
+        },
+        error: (err) => {
+          console.error('Lỗi khi tải thông tin sản phẩm:', err);
+          this.toastr.error('Không thể tải thông tin sản phẩm');
+          this.goBack();
+        },
+      });
   }
 
-  loadCategories(): void {
-    this.categoryService.getCategories().subscribe({
-      next: (data: any) => {
-        this.categories = data.data;
-      },
-      error: (err: any) => {
-        console.error('Error loading categories', err);
-      },
-    });
+  private loadCategories(): void {
+    this.categoryService
+      .getCategories()
+      .pipe(take(1))
+      .subscribe({
+        next: (data: any) => {
+          this.categories = data.data;
+        },
+        error: (err) => {
+          console.error('Lỗi khi tải danh mục:', err);
+          this.toastr.error('Không thể tải danh mục sản phẩm');
+        },
+      });
   }
 
   onSubmit(): void {
@@ -96,45 +104,34 @@ export class ProductFormComponent implements OnInit {
     this.isSubmitting = true;
     const productData: IProduct = this.productForm.value;
 
-    if (this.isEditMode) {
-      this.productService
-        .updateProduct(this.productId, productData)
-        .pipe(
-          finalize(() => {
-            this.productForm.enable();
-            this.isSubmitting = false;
-          })
-        )
-        .subscribe({
-          next: () => {
-            this.toastr.success('Product updated successfully!');
-            this.goBack();
-          },
-          error: (err) => {
-            console.error('Error updating product', err.message);
-            this.toastr.error('Failed to update product!');
-          },
-        });
-    } else {
-      this.productService
-        .createProduct(productData)
-        .pipe(
-          finalize(() => {
-            this.productForm.enable();
-            this.isSubmitting = false;
-          })
-        )
-        .subscribe({
-          next: () => {
-            this.toastr.success('Product created successfully!');
-            this.goBack();
-          },
-          error: (err) => {
-            console.error('Error creating product', err.message);
-            this.toastr.error('Failed to create product!');
-          },
-        });
-    }
+    const operation = this.isEditMode
+      ? this.productService.updateProduct(this.productId, productData)
+      : this.productService.createProduct(productData);
+
+    operation
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.productForm.enable();
+          this.isSubmitting = false;
+        })
+      )
+      .subscribe({
+        next: () => {
+          const message = this.isEditMode
+            ? 'Cập nhật sản phẩm thành công!'
+            : 'Tạo sản phẩm thành công!';
+          this.toastr.success(message);
+          this.goBack();
+        },
+        error: (err) => {
+          console.error('Lỗi khi lưu thông tin sản phẩm:', err);
+          const message = this.isEditMode
+            ? 'Lỗi khi cập nhật sản phẩm'
+            : 'Lỗi khi tạo sản phẩm';
+          this.toastr.error(message);
+        },
+      });
   }
 
   goBack(): void {

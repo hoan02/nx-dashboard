@@ -1,15 +1,17 @@
 <mat-sidenav-container class="h-screen">
   <!-- Sidebar (chỉ hiển thị khi đã đăng nhập) -->
-  <!-- @if(isLoggedIn){ -->
-  <mat-sidenav #drawer mode="over" class="bg-white">
-    <app-sidebar (menuItemClick)="drawer.close()"></app-sidebar>
+  @if (isLoggedIn$ | async) {
+  <mat-sidenav #drawer mode="side" opened [class.collapsed]="isCollapsed" class="bg-white transition-all duration-300" [style.width]="isCollapsed ? '64px' : '240px'">
+    <app-sidebar [isCollapsed]="isCollapsed"></app-sidebar>
   </mat-sidenav>
-  <!-- } -->
+  }
 
   <!-- Main Content -->
-  <mat-sidenav-content>
+  <mat-sidenav-content [style.margin-left]="(isLoggedIn$ | async) ? (isCollapsed ? '64px' : '240px') : '0'">
     <!-- Header -->
-    <app-header (toggleSidebar)="drawer.toggle()" class="header-fixed"></app-header>
+    @if (isLoggedIn$ | async) {
+    <app-header (toggleSidebar)="toggleSidebar()" class="header-fixed"></app-header>
+    }
 
     <!-- Page Content -->
     <div class="content-wrapper">

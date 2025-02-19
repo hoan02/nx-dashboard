@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, Input, inject, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { StorageService } from '@nx-dashboard/auth/data-access';
@@ -24,6 +24,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
+  @Input() isCollapsed = false;
   @Output() menuItemClick = new EventEmitter<void>();
   private storageService = inject(StorageService);
   profile$ = this.storageService.profile$;

@@ -12,6 +12,10 @@ mat-sidenav {
   border-right: 1px solid rgba(0, 0, 0, 0.12);
 }
 
+mat-sidenav-content {
+  transition: margin-left 0.3s ease;
+}
+
 .header-fixed {
   position: sticky;
   top: 0;

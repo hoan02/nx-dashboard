@@ -25,7 +25,11 @@ export class StorageService {
 
   getSession(): any {
     const session = localStorage.getItem(this.STORAGE_KEY);
-    return session ? JSON.parse(session) : null;
+    const parsedSession = session ? JSON.parse(session) : null;
+    if (parsedSession?.user && !this.profileSubject.value) {
+      this.profileSubject.next(parsedSession.user);
+    }
+    return parsedSession;
   }
 
   clearSession(): void {

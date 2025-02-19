@@ -3,16 +3,47 @@
   height: 100%;
 }
 
+mat-toolbar {
+  min-height: 64px;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+
+  span {
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
 mat-nav-list {
   padding: 10px;
 
   .mat-mdc-list-item {
     padding: 4px 8px;
-    border-radius: 10px;
     margin-bottom: 10px;
+    transition: all 0.3s ease;
 
     &:hover {
       background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    .mat-icon {
+      margin-right: 12px;
+      transition: margin 0.3s ease;
+    }
+
+    span[matListItemTitle] {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &.sidebar-item {
+      ::ng-deep .mdc-list-item__content {
+        transition: padding 0.3s ease;
+        width: 100%;
+      }
     }
   }
 
@@ -30,8 +61,21 @@ mat-divider {
   margin: 8px 0;
 }
 
-.mat-icon {
-  margin-right: 12px;
+:host-context(.collapsed) {
+  .mat-mdc-list-item {
+    padding: 4px 0;
+    justify-content: center;
+
+    .mat-icon {
+      margin-right: 0;
+    }
+
+    &.sidebar-item {
+      ::ng-deep .mdc-list-item__content {
+        padding: 0 8px;
+      }
+    }
+  }
 }
 
 button[mat-list-item] {

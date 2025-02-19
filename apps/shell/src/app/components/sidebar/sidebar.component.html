@@ -1,7 +1,7 @@
 <div class="h-full flex flex-col">
   <!-- Logo -->
   <mat-toolbar color="primary" class="flex-none">
-    <span class="text-xl font-bold">Dashboard</span>
+    <span class="text-xl font-bold transition-opacity duration-300" [class.opacity-0]="isCollapsed">Dashboard</span>
   </mat-toolbar>
 
   <!-- Navigation -->
@@ -12,15 +12,14 @@
            [routerLink]="item.route"
            routerLinkActive="active-link"
            [routerLinkActiveOptions]="{exact: item.exact || false}"
-           (click)="menuItemClick.emit()">
+           (click)="menuItemClick.emit()"
+           class="sidebar-item">
           <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
-          <span matListItemTitle>{{item.label}}</span>
+          <span matListItemTitle class="transition-opacity duration-300" [class.opacity-0]="isCollapsed">{{item.label}}</span>
         </a>
       </ng-container>
     </ng-container>
 
     <mat-divider></mat-divider>
-
-
   </mat-nav-list>
 </div>

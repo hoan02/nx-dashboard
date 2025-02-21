@@ -6,6 +6,9 @@
 
   <div class="flex-1"></div>
 
+  <!-- Theme Toggle Button -->
+  <ui-theme-toggle-button class="mr-2"></ui-theme-toggle-button>
+
   <!-- Login Button or User Menu -->
   <ng-container *ngIf="isLoggedIn && currentUser; else loginButton">
     <button mat-button [matMenuTriggerFor]="userMenu">

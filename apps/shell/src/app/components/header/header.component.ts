@@ -7,6 +7,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { ThemeToggleButtonComponent } from '@nx-dashboard/ui';
 
 @Component({
   selector: 'app-header',
@@ -17,7 +18,8 @@ import { MatMenuModule } from '@angular/material/menu';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule
+    MatMenuModule,
+    ThemeToggleButtonComponent
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
